@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="yes"?>
+<project basedir="." default="generate-src">
+
+    <property name="src.dir" value="src"/>
+    <property name="schema.dir" value="schema"/>
+    <property name="jaxb-lib.dir" value="jaxb-lib"/>
+    
+    <path id="xjc-classpath">
+        <fileset dir="${jaxb-lib.dir}" includes="**/*.jar"/>
+    </path>
+    
+    <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+        <classpath refid="xjc-classpath"/>
+    </taskdef>
+
+    <target name="generate-src" description="Generate the source files based on the schemas">
+        <echo message="generate java from schema..." />
+        <xjc package="com.hp.jmx.qc.rest.model" destdir="${src.dir}">
+            <schema dir="${schema.dir}" includes="**/*.xsd"/>
+        </xjc>
+    </target>
+</project>

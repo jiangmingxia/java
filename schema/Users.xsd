@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+    <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        name="Users">
+        <xs:annotation>
+            <xs:documentation>The users collection.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    name="User" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>A user.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="email">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The email for notifications.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType />
+                            </xs:element>
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="phone">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Phone number.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType />
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="FullName" use="required">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The name of the person this ALM user belongs to.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Name" use="required"
+                            type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The user name for use within ALM.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</schema>

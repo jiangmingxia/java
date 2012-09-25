@@ -1,0 +1,11 @@
+#need to be executed on the machine where dmp file exists
+oracle.jdbc.url=jdbc:oracle:thin:@apps002:1521:ALMQA1
+#dumpFile=C:\Customer_Project\oracle\QAP_UPGRADE_RTM_LAB_PROJECT_DB.dmp
+dumpFile=C:\Downloads\builds\LABPC\oracle\QAP_UPGRADE_RTM_LAB_PROJECT_DB.dmp
+
+#if not privided, new schema will be the same schema in dump file
+#newSchema=dela_schema1
+
+#oracle data file directory. if not privided, using existing tablespace
+#oracleDataSpace=C:\oracle\oradata
+
