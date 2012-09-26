@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+    <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        name="Fields">
+        <xs:annotation>
+            <xs:documentation>
+                A collection of entity fields.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    name="Field" maxOccurs="unbounded" >
+                    <xs:annotation>
+                        <xs:documentation>
+                            An entity field.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Size"
+                                type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The maximum size of the data in
+                                        bytes.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="History"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that
+                                        change records are kept on this
+                                        field.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="List-Id"
+                                type="xs:integer" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        If Verify is Y,indicating that
+                                        the field value must be an
+                                        element of a list, this is the
+                                        ID of the list.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Required"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that a
+                                        value for the field is required
+                                        before a user can create the
+                                        entity.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="System"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates a system
+                                        field. N indicates a
+                                        user-defined field.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Type"
+                                type="xs:string">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The data type.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Verify"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that the
+                                        field value must be an item in a
+                                        list.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Virtual"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that the
+                                        field does not have a physical
+                                        representation in the database.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Active"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that the field is active or not
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Editable"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that the filed is editable or not
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Filterable" type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>A value of Y indicates that the users can add the field to a view filter.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                            <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Groupable" type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>A value of Y indicates that a user can group the results by values of this field.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>    
+
+                            <xs:element
+                                xmlns:xs="http://www.w3.org/2001/XMLSchema" name="SupportsMultivalue"
+                                type="xs:boolean">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A value of Y indicates that the filed supports multi value
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+
+                        </xs:sequence>
+                        <xs:attribute name="Label" use="required">
+                            <xs:annotation>
+                                <xs:documentation>The display label text.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="Name" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation>The field name.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="PhysicalName" type="xs:string" use="required">
+                            <xs:annotation>
+                                <xs:documentation>The field name in the DB.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</schema>

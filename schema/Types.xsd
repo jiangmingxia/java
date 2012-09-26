@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="types">
+		<xs:annotation>
+			<xs:documentation>
+				A collection of types or subtypes.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" minOccurs="0" maxOccurs="unbounded" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+					<xs:annotation>
+						<xs:documentation>
+							A types or subtype.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:string" use="required" />
+						<xs:attribute name="name" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</schema>
