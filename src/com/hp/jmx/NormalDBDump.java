@@ -2,6 +2,8 @@ package com.hp.jmx;
 
 import java.io.File;
 
+import com.hp.jmx.util.FileAccessor;
+
 public class NormalDBDump extends BaseDBDump implements DBDump {
 	public NormalDBDump(String dumpFile, String url, String oracleDataSpace, OracleDBAccessor dbAccessor) throws Exception {
 		super(dumpFile, url, oracleDataSpace,dbAccessor);

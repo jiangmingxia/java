@@ -5,6 +5,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.jmx.util.FileAccessor;
+
 public class OracleDBAccessor extends BaseDBAccessor implements DBAccessor {
 	public OracleDBAccessor(String jdbcURL, String username, String password, String dbName) {
 		super(jdbcURL, username, password, dbName);

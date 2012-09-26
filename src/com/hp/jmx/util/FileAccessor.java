@@ -1,4 +1,4 @@
-package com.hp.jmx;
+package com.hp.jmx.util;
 
 import java.io.*;
 import java.util.regex.Matcher;

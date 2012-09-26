@@ -17,6 +17,8 @@ public interface EntityObject {
     
     public static final String RUN_TYPE = "run";
     
+    public static final String TEST_SET_FOLDER_TYPE="test-set-folder";
+    
     public long getId();
     public void setId(long id);
 }

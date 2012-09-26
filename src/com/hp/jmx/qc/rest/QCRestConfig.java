@@ -24,6 +24,9 @@ public class QCRestConfig {
     public static final String QC_REST_DOMAIN_KEY = "qc.rest.domain";
 
     public static final String QC_REST_PROJECT_KEY = "qc.rest.project";
+    
+    public static final String QC_TEST_LOCATION="qc.test.location";
+    public static final String QC_TESTSET_LOCATION="qc.testset.location";
 
 	private Properties properties;
 	
@@ -69,6 +72,14 @@ public class QCRestConfig {
 
     public static String getQCRestProject() {
         return QCRestConfig.getInstance().getQCProperty(QC_REST_PROJECT_KEY);
+    }
+    
+    public static String getQCTestLocation() {
+        return QCRestConfig.getInstance().getQCProperty(QC_TEST_LOCATION);
+    }
+    
+    public static String getQCTestsetLocation() {
+        return QCRestConfig.getInstance().getQCProperty(QC_TESTSET_LOCATION);
     }
     
 }
