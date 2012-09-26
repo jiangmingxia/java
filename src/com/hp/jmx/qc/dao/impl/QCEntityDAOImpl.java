@@ -12,6 +12,7 @@ import com.hp.jmx.qc.rest.EntityNotFoundException;
 import com.hp.jmx.qc.rest.QCRestClient;
 import com.hp.jmx.qc.rest.QCRestRequest;
 import com.hp.jmx.qc.rest.QCRestWSException;
+import com.hp.jmx.qc.rest.entity.GetEntitiesQCRestRequest;
 import com.hp.jmx.qc.rest.entity.GetQCEntitiesRequest;
 import com.hp.jmx.qc.rest.entity.QCEntityRequest;
 
@@ -97,6 +98,17 @@ public class QCEntityDAOImpl implements QCEntityDAO {
         
     }
 
+    public List<QCEntity> query(QCEntity entity, String queryString) {
+        GetQCEntitiesRequest request = new GetQCEntitiesRequest(entity,queryString);
+        QCRestClient.getInstance().run(request);
+        
+        if (!request.isSucceed()) {
+            logAndException(request.getErrorMessage());
+        }
+        
+        return request.getEntities();
+    }
+    
     protected void logAndException(String message) {
         log.error(message);
         throw new DAOException(message);

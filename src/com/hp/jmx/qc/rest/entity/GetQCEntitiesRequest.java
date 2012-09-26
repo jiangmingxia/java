@@ -28,22 +28,40 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
     
     private QCEntity entity;
     
-    public GetQCEntitiesRequest(QCEntity entity) {
+    private void init(QCEntity entity){
         this.httpMethod = QCRestRequest.GET_METHOD;
         this.entityType = entity.getEntityType();
         this.keyType = entity.getKeyType();
-        this.entity = entity;
-                
-        String url = getBaseURL() + entityType + "s";
+        this.entity = entity;        
+        this.outputRequest = false;
         
+    }
+    
+    public GetQCEntitiesRequest(QCEntity entity) {
+        init(entity);        
+                
+        String url = getBaseURL() + entityType + "s";        
         String filterString = generateFilterString();
         if (filterString != null && !filterString.isEmpty()) {
             if (filterString.startsWith("?"))
                 url = url + filterString;
             else
                 url = url + "?" + filterString;
-        }
-        this.outputRequest = false;
+        }        
+        this.requestURL = url;
+    }
+    
+    public GetQCEntitiesRequest(QCEntity entity,String internalString) {
+        init(entity);        
+                
+        String url = getBaseURL() + entityType + "s";        
+        String filterString = internalString;
+        if (filterString != null && !filterString.isEmpty()) {
+            if (filterString.startsWith("?"))
+                url = url + filterString;
+            else
+                url = url + "?" + filterString;
+        }        
         this.requestURL = url;
     }
     
