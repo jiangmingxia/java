@@ -1,5 +1,8 @@
 package test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,16 +34,64 @@ public class TestQCEntityDAO {
 //    		System.out.println("Create test set successfully done.");
 //    	}
     	
-    	String input = "9/18/2012";
-    	//String pattern = "(^.*/s|^)([0-1]?/d)(\\-|\\/|\\.)([0-3]?/d)(\\-|\\/|\\.)(/d{4})/s.*";
-    	String pattern = "^([01]?\\d)/([0123]\\d)/(\\d{4})$";
-    	Pattern p = Pattern.compile(pattern);
+    	String input = " 2012/4/6 11:34:40 pm asdfasf";    	
+    	String input2 = "asdf test{1}:pass fasdf";
+    	String pattern1 = " ?([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d)(\\-|\\/|\\.)(\\d{4}) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
+    	String pattern2 = " ?(\\d{4})(\\-|\\/|\\.)([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
+    	
+    	String pattern3 = "(\\S+) *: *(pass|fail|ini)($| +.*$)";
+    	
+    	Pattern p = Pattern.compile(pattern1);
     	Matcher matcher=p.matcher(input);
-    	System.out.println(matcher.matches());
+    	//System.out.println(matcher.matches());
+    	
     	while (matcher.find()) {
-			String option = matcher.group(1); //remove "-"
-			System.out.println(option);
+    	    int count = matcher.groupCount();
+    	    System.out.println("matcher.groupCount():"+count);
+    	    for (int i=1;i<=count;i++){
+    	        System.out.println("matcher.group("+i+"):"+matcher.group(i));
+    	    }
+			
 		}
+    	
+    	p = Pattern.compile(pattern2);
+        matcher=p.matcher(input);
+        //System.out.println(matcher.matches());
+        
+        while (matcher.find()) {
+            int count = matcher.groupCount();
+            System.out.println("matcher.groupCount():"+count);
+            for (int i=1;i<=count;i++){
+                System.out.println("matcher.group("+i+"):"+matcher.group(i));
+            }
+            
+        }
+        
+        p = Pattern.compile(pattern3);
+        matcher=p.matcher(input2);
+        //System.out.println(matcher.matches());
+        
+        while (matcher.find()) {
+            int count = matcher.groupCount();
+            System.out.println("matcher.groupCount():"+count);
+            for (int i=1;i<=count;i++){
+                System.out.println("matcher.group("+i+"):"+matcher.group(i));
+            }
+            
+        }
+        
+        //QC:    18:11:51       2009-01-28
+        DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
+        dateTimeFormat.setLenient(false);
+        Date date =null;
+        try {
+           
+                date = dateTimeFormat.parse("2012-11-31 23:23:33");
+                System.out.println("你输入的日期合法");
+        } catch (Exception e) {
+            System.out.println("你输入的日期不合法，请重新输入");
+        }
     	
     }
 
