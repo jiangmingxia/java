@@ -17,8 +17,13 @@ public class InstanceUtil {
 		entity.put("cycle-id",testSetId);
 		entity.put("test-id", testId);
 		entity.put("subtype-id",defaultSubType);
+		entity.put("test-order",getTestOrder());
 		entityDAO.save(entity);
 		return entity;
+	}
+	
+	private static String getTestOrder(){
+		return "-1";
 	}
 
 }

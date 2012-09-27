@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xs:element name="Lists" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	  <xs:annotation>
+	    <xs:documentation>A collection of lists  of strings to be used as field values.</xs:documentation>
+	  </xs:annotation>
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="List" minOccurs="0" maxOccurs="unbounded">
+	        <xs:annotation>
+	          <xs:documentation>
+	            A list of strings to be used as field values.
+	          </xs:documentation>
+	        </xs:annotation>
+	        <xs:complexType>
+	          <xs:sequence>
+	            <xs:element name="Name" type="xs:string">
+	              <xs:annotation>
+	                <xs:documentation>
+	                  The name of the list.
+	                </xs:documentation>
+	              </xs:annotation>
+	            </xs:element>
+	            <xs:element name="Id" type="xs:integer">
+	              <xs:annotation>
+	                <xs:documentation>
+	                  The record ID of the list in the Lists table.
+	                </xs:documentation>
+	              </xs:annotation>
+	            </xs:element>
+	            <xs:element name="Items">
+	              <xs:annotation>
+	                <xs:documentation>
+	                  A collection of values and folders.
+	                </xs:documentation>
+	              </xs:annotation>
+	              <xs:complexType>
+	                <xs:sequence>
+	                  <xs:element name="Item" minOccurs="0" maxOccurs="unbounded" >
+						  <xs:annotation>
+						    <xs:documentation>
+						      Either an individual value for use in fields, or a folder in a hierarchy of lists.
+						    </xs:documentation>
+						  </xs:annotation>
+						  <xs:complexType>
+						    <xs:sequence>
+						      <xs:element name="Item" minOccurs="0" maxOccurs="unbounded" />
+						    </xs:sequence>
+						    <xs:attribute name="logicalName" type="xs:string" use="required">
+						      <xs:annotation>
+						        <xs:documentation>
+						          Unique identifier for an item in the project.
+						        </xs:documentation>
+						      </xs:annotation>
+						    </xs:attribute>
+						    <xs:attribute name="value" type="xs:string" use="required">
+						      <xs:annotation>
+						        <xs:documentation>
+						          An individual value. If this item is a list folder, the name of the folder.
+						        </xs:documentation>
+						      </xs:annotation>
+						    </xs:attribute>
+						  </xs:complexType>
+						</xs:element>
+	                </xs:sequence>
+	              </xs:complexType>
+	            </xs:element>
+	          </xs:sequence>
+	        </xs:complexType>
+	      </xs:element>
+	    </xs:sequence>
+	  </xs:complexType>
+	</xs:element>
+</schema>

@@ -27,6 +27,11 @@ public class QCRestConfig {
     
     public static final String QC_TEST_LOCATION="qc.test.location";
     public static final String QC_TESTSET_LOCATION="qc.testset.location";
+    
+    public static final String LOG_MODE="log.mode";
+    public static final String LOG_PREFIX="log.prefix";    
+    public static final String EXCLUDE="exclude";
+	public static final String INCLUDE="include";
 
 	private Properties properties;
 	
@@ -80,6 +85,14 @@ public class QCRestConfig {
     
     public static String getQCTestsetLocation() {
         return QCRestConfig.getInstance().getQCProperty(QC_TESTSET_LOCATION);
+    }
+    
+    public static String getLogMode() {
+        return QCRestConfig.getInstance().getQCProperty(LOG_MODE);
+    }
+    
+    public static String getLogPrefix() {
+        return QCRestConfig.getInstance().getQCProperty(LOG_PREFIX);
     }
     
 }

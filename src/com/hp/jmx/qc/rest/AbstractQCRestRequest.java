@@ -50,7 +50,10 @@ public abstract class AbstractQCRestRequest implements QCRestRequest {
         String domain = QCRestConfig.getQCRestDomain();
         String project = QCRestConfig.getQCRestProject();
         
-        String url = qcURL + "/rest/domains/" + domain + "/projects/" + project + "/";
+        if (!qcURL.endsWith("/")) {
+        	qcURL=qcURL+"/";
+        }
+        String url = qcURL + "rest/domains/" + domain + "/projects/" + project + "/";
         return url;
     }
     

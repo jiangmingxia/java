@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xs:element name="Item" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	  <xs:annotation>
+	    <xs:documentation>
+	      Either an individual value for use in fields, or a folder in a hierarchy of lists.
+	    </xs:documentation>
+	  </xs:annotation>
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="Item" minOccurs="0" maxOccurs="unbounded" />
+	    </xs:sequence>
+	    <xs:attribute name="logicalName" type="xs:string" use="required">
+	      <xs:annotation>
+	        <xs:documentation>
+	          Unique identifier for an item in the project.
+	        </xs:documentation>
+	      </xs:annotation>
+	    </xs:attribute>
+	    <xs:attribute name="value" type="xs:string" use="required">
+	      <xs:annotation>
+	        <xs:documentation>
+	          An individual value. If this item is a list folder, the name of the folder.
+	        </xs:documentation>
+	      </xs:annotation>
+	    </xs:attribute>
+	  </xs:complexType>
+	</xs:element>
+</schema>

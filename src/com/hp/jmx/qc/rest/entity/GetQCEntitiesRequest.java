@@ -41,7 +41,21 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         init(entity);        
                 
         String url = getBaseURL() + entityType + "s";        
-        String filterString = generateFilterString();
+        String filterString = generateFilterString(false);
+        if (filterString != null && !filterString.isEmpty()) {
+            if (filterString.startsWith("?"))
+                url = url + filterString;
+            else
+                url = url + "?" + filterString;
+        }        
+        this.requestURL = url;
+    }
+    
+    public GetQCEntitiesRequest(QCEntity entity, boolean isComplexQuery) {
+        init(entity);        
+                
+        String url = getBaseURL() + entityType + "s";        
+        String filterString = generateFilterString(isComplexQuery);
         if (filterString != null && !filterString.isEmpty()) {
             if (filterString.startsWith("?"))
                 url = url + filterString;
@@ -114,15 +128,17 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         return this.results;
     }
 
-    private String generateFilterString() {
+    private String generateFilterString(boolean isComplexQuery) {
 
         if (entity.size() <= 0)
             return null;
+        
         
         StringBuffer sb = new StringBuffer("query={");
 
         Map<String, Field> keyFieldMap = getKeyFieldMap();
         boolean first = true;
+        
         for (String key : entity.keySet()) {
             Field field = keyFieldMap.get(key);
             String queryName = field.getName();
@@ -130,9 +146,14 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
             if (queryValue != null && !queryValue.isEmpty()) {
                 if (!first) {
                     sb.append(";");
-                }
-                sb.append(queryName + "['");
-                sb.append(queryValue + "']");
+                }        
+                if (isComplexQuery){
+                	sb.append(queryName + "[");
+                    sb.append(queryValue + "]");
+                } else {
+                	sb.append(queryName + "['");
+                    sb.append(queryValue + "']");                	
+                }                
                 first = false;
             }
         }
