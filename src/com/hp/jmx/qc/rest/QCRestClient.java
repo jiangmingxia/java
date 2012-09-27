@@ -88,7 +88,12 @@ public class QCRestClient {
         final String userPassword = QCRestConfig.getQCRestUsername() + ":" + QCRestConfig.getQCRestPassword();
         final String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
 
-        final URL url = new URL(QCRestConfig.getQCRestURL() + "authentication-point/authenticate");
+        String QCRestURL = QCRestConfig.getQCRestURL();
+        if (!QCRestURL.endsWith("/")) QCRestURL = QCRestURL+"/";
+        //Maya:
+        //final URL url = new URL(QCRestConfig.getQCRestURL() + "authentication-point/authenticate");
+        //Apollo:        
+        final URL url = new URL(QCRestURL + "authentication-point/authenticate");
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
         this.setTimeout(conn);

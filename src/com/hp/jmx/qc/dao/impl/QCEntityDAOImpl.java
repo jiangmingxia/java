@@ -87,7 +87,11 @@ public class QCEntityDAOImpl implements QCEntityDAO {
     }
     
     public List<QCEntity> query(QCEntity entity) {
-        GetQCEntitiesRequest request = new GetQCEntitiesRequest(entity);
+        return query(entity,false);
+    }
+    
+    public List<QCEntity> query(QCEntity entity, boolean isComplexQuery) {
+        GetQCEntitiesRequest request = new GetQCEntitiesRequest(entity,isComplexQuery);
         QCRestClient.getInstance().run(request);
         
         if (!request.isSucceed()) {
@@ -95,7 +99,6 @@ public class QCEntityDAOImpl implements QCEntityDAO {
         }
         
         return request.getEntities();
-        
     }
 
     public List<QCEntity> query(QCEntity entity, String queryString) {

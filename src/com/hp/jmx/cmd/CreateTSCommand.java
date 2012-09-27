@@ -8,18 +8,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.hp.jmx.qc.model.QCEntity;
-import com.hp.jmx.qc.rest.QCRestConfig;
+import com.hp.jmx.qc.util.InstanceUtil;
 import com.hp.jmx.qc.util.TestSetUtil;
 import com.hp.jmx.qc.util.TestUtil;
 
 public class CreateTSCommand implements Command {
 	
-	private final static String commandSample = "create testset -name <testset name> -file <testset file>";	 
-	public final static String command_name = "create testset";
+	private final static String commandSample = "create_testset -name <testset name> -file <testset file>";	 
+	public final static String command_name = "create_testset";
 	private final static String NameOption = "name";
 	private final static String FileOption = "file";
 	
@@ -30,7 +28,7 @@ public class CreateTSCommand implements Command {
 		
 		//check if test set exists in ALM
 		String testSetName = options.get(NameOption);
-		if (!TestSetUtil.isSourceTestSetExist(testSetName)) {
+		if (TestSetUtil.isSourceTestSetExist(testSetName)) {
 			CommandOutput.errorOutput("Test set "+testSetName+" already exists!");
 			return false;
 		}
@@ -74,9 +72,12 @@ public class CreateTSCommand implements Command {
 			}
 			
 			//add it to test set
-			
-		}
-		
+			QCEntity instanceEntity = InstanceUtil.addTestToTestSet(testEntity.getEntityId(), testSetEntity.getEntityId());
+			if (instanceEntity ==null) {
+				CommandOutput.errorOutput("Fail to add test " +testEntity.get("name")+" to test set "+testSetEntity.get("name")+".");
+				return false;
+			}
+		}		
 		return true;
 	}
 	
