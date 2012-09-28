@@ -1,5 +1,6 @@
 package test;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +21,8 @@ public class TestQCEntityDAO {
     
     private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
     
-    public static void main(String[] args) {
+    @SuppressWarnings("deprecation")
+	public static void main(String[] args) {
         //QCEntity entity = testCreate();
         //testQuery();
 //    	String cmd = "create_testset -name myTS3 -file C:\\Users\\jiamingx\\Downloads\\ts1.txt";
@@ -34,7 +36,7 @@ public class TestQCEntityDAO {
 //    		System.out.println("Create test set successfully done.");
 //    	}
     	
-    	String input = " 2012/4/6 11:34:40 pm asdfasf";    	
+    	String input = "2012/06/30 6:56:11 : Scenario Name: Scenario17 Deploy Mode: /Isolate/Common Proxy/WebServer Authentication: /Forward Proxy/NTLM Authentication/No WebServer Authentication IsSSL: True IsWebServer: False Result: True";    	
     	String input2 = "asdf test{1}:pass fasdf";
     	String pattern1 = " ?([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d)(\\-|\\/|\\.)(\\d{4}) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
     	String pattern2 = " ?(\\d{4})(\\-|\\/|\\.)([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
@@ -92,6 +94,12 @@ public class TestQCEntityDAO {
         } catch (Exception e) {
             System.out.println("你输入的日期不合法，请重新输入");
         }
+        
+        File file = new File("C:\\Users\\jiamingx\\Downloads\\ts1.txt");
+        Date d1 = new Date(file.lastModified());
+        Date d2 = new Date(2010,12,10,11,24,38);
+        dateTimeFormat.format(d2);
+        System.out.println(dateTimeFormat.format(d2));
     	
     }
 

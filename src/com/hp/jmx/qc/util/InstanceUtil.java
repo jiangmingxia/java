@@ -7,6 +7,7 @@ import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
+import com.hp.jmx.qc.rest.entity.EntityListHelper;
 
 public class InstanceUtil {
 	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
@@ -24,6 +25,10 @@ public class InstanceUtil {
 	
 	private static String getTestOrder(){
 		return "-1";
+	}
+	
+	public static List<String> getListByName(String listName){
+		return EntityListHelper.getEntityListByName(EntityObject.TEST_INSTANCE_TYPE, listName);
 	}
 
 }

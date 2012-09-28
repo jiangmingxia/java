@@ -8,10 +8,10 @@ import com.hp.jmx.qc.rest.entity.EntityListHelper;
 public class TestEntityLists {
     public static void main(String[] args) {
 
-        List<String> listValues = EntityListHelper.getEntityListById(EntityObject.TEST_TYPE, "1");
-        printFieldMap(listValues);
+        //List<String> listValues = EntityListHelper.getEntityListById(EntityObject.TEST_TYPE, "1");
+        //printFieldMap(listValues);
 
-        List<String> listValues2 = EntityListHelper.getEntityListByName(EntityObject.TEST_TYPE, "status");
+        List<String> listValues2 = EntityListHelper.getEntityListByName(EntityObject.TEST_INSTANCE_TYPE, "Status");
         printFieldMap(listValues2);
 
     }
