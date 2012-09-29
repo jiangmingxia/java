@@ -103,6 +103,27 @@ public class FolderUtil {
 		return currentFolder;
 	}
 	
+	//return true if folder is ancestor of the test set
+	public static boolean isTestSetFolderAncestor(String folderId, String testSetId){
+		QCEntity testSetEntity = TestSetUtil.getTestSetById(testSetId);
+		String parentId= testSetEntity.getEntityParentId();
+		QCEntity testSetFolderEntity;
+		while (!parentId.equals(folderId)&&!parentId.equals(getTestSetRootFolderId())) {
+			testSetFolderEntity = FolderUtil.getTestSetFolderById(parentId);
+			parentId = testSetFolderEntity.getEntityParentId();
+		}
+		
+		if (parentId.equals(folderId)) return true;		
+		return false;
+	}	
+	
+	public static QCEntity getTestFolderById(String id){
+		return EntityUtil.getEntityById(EntityObject.TEST_FOLDER_TYPE, id);
+	}
+	
+	public static QCEntity getTestSetFolderById(String id){
+		return EntityUtil.getEntityById(EntityObject.TEST_SET_FOLDER_TYPE, id);
+	}
 	
 	//return root folder id
 	private static String getTestRootFolderId(){

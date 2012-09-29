@@ -123,7 +123,7 @@ public class QCRestClient {
     protected HttpURLConnection sendRequest(QCRestRequest request, String ssoCookieValue) throws IOException, QCRestWSException
     {
         // post the output stream
-        final URL url = new URL(request.getRequestURL());
+        final URL url = new URL(request.getRequestURL());        
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
         this.setTimeout(conn);

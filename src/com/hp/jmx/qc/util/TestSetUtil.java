@@ -37,4 +37,8 @@ public class TestSetUtil {
 		entityDAO.save(entity);
 		return entity;
 	}
+	
+	public static QCEntity getTestSetById(String id){
+		return EntityUtil.getEntityById(EntityObject.TEST_SET_TYPE, id);
+	}
 }

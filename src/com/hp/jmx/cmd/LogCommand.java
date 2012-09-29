@@ -103,9 +103,9 @@ public class LogCommand implements Command {
 		//insert run result to QC
 		//1.select test set: 1)match details: is empty or same as details
 		//2)has this test in it
-		//3)start date >= testset open date && start date <= close date if exists. if not exists, don't compare its close date
-		//not under testset source location
-		//if not found 1,2,3,4, try 2 and test set under source location(maybe under source subfolder), the first find one
+		//3)start date >= test set open date && start date <= close date if exists. if not exists, don't compare its close date
+		//not under test set source location
+		//if not found 1,2,3,4, try 2 and test set under source location(maybe under source sub folder), the first find one
 		
 		
 		

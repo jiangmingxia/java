@@ -49,5 +49,9 @@ public class TestUtil {
 		if (entities.size()<1) return null;
 		return entities.get(0);
 	}
+	
+	public static QCEntity getTestById(String id){
+		return EntityUtil.getEntityById(EntityObject.TEST_TYPE, id);
+	}
 
 }

@@ -1,6 +1,8 @@
 package com.hp.jmx.qc.rest.entity;
 
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         
     }
     
-    public GetQCEntitiesRequest(QCEntity entity) {
+    public GetQCEntitiesRequest(QCEntity entity) throws UnsupportedEncodingException {
         init(entity);        
                 
         String url = getBaseURL() + entityType + "s";        
@@ -51,7 +53,7 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         this.requestURL = url;
     }
     
-    public GetQCEntitiesRequest(QCEntity entity, boolean isComplexQuery) {
+    public GetQCEntitiesRequest(QCEntity entity, boolean isComplexQuery) throws UnsupportedEncodingException {
         init(entity);        
                 
         String url = getBaseURL() + entityType + "s";        
@@ -65,11 +67,11 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         this.requestURL = url;
     }
     
-    public GetQCEntitiesRequest(QCEntity entity,String internalString) {
+    public GetQCEntitiesRequest(QCEntity entity,String internalString) throws UnsupportedEncodingException {
         init(entity);        
                 
         String url = getBaseURL() + entityType + "s";        
-        String filterString = internalString;
+        String filterString = internalString;        
         if (filterString != null && !filterString.isEmpty()) {
             if (filterString.startsWith("?"))
                 url = url + filterString;
@@ -128,20 +130,22 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         return this.results;
     }
 
-    private String generateFilterString(boolean isComplexQuery) {
+    private String generateFilterString(boolean isComplexQuery) throws UnsupportedEncodingException {
 
         if (entity.size() <= 0)
             return null;
         
-        
-        StringBuffer sb = new StringBuffer("query={");
-
+        StringBuffer sb = new StringBuffer("{");
         Map<String, Field> keyFieldMap = getKeyFieldMap();
         boolean first = true;
         
         for (String key : entity.keySet()) {
             Field field = keyFieldMap.get(key);
-            String queryName = field.getName();
+            String queryName = key;
+            if (field != null){
+            	queryName = field.getName();            	
+            }
+            
             String queryValue = entity.get(key);
             if (queryValue != null && !queryValue.isEmpty()) {
                 if (!first) {
@@ -157,12 +161,29 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
                 first = false;
             }
         }
-        
         sb.append("}");
-        String filterString = sb.toString();
-        log.info("The query string is: " + filterString);
         
+        //to encode non-space chars
+//        String query = sb.toString();
+//        String[] nonSpaces= query.split(" ");        
+//        sb = new StringBuffer("query=");
+//        first = true;
+//        for (String item:nonSpaces) {
+//        	if (!first) {
+//                sb.append(" ");
+//            }
+//        	if (item.isEmpty()) continue;
+//        	sb.append(URLEncoder.encode(item, "UTF-8"));
+//        	first = false;
+//        }
+//        sb.append("}");
+         
+        String filterString = "query="+URLEncoder.encode(sb.toString(), "UTF-8");
+        //String filterString = "query="+sb.toString();
+        log.info("The query string is: " + filterString);    
+		
         return filterString;
+        
     }
 
     private Map<String, Field> getKeyFieldMap() {

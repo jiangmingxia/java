@@ -30,5 +30,9 @@ public class InstanceUtil {
 	public static List<String> getListByName(String listName){
 		return EntityListHelper.getEntityListByName(EntityObject.TEST_INSTANCE_TYPE, listName);
 	}
+	
+	public static QCEntity getInstanceById(String id){
+		return EntityUtil.getEntityById(EntityObject.TEST_INSTANCE_TYPE, id);
+	}
 
 }

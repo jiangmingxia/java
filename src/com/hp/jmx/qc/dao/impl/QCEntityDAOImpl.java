@@ -1,5 +1,6 @@
 package com.hp.jmx.qc.dao.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -91,7 +92,13 @@ public class QCEntityDAOImpl implements QCEntityDAO {
     }
     
     public List<QCEntity> query(QCEntity entity, boolean isComplexQuery) {
-        GetQCEntitiesRequest request = new GetQCEntitiesRequest(entity,isComplexQuery);
+        GetQCEntitiesRequest request;
+		try {
+			request = new GetQCEntitiesRequest(entity,isComplexQuery);
+		} catch (UnsupportedEncodingException e) {
+			request = null;
+			logAndException(e.toString());
+		}
         QCRestClient.getInstance().run(request);
         
         if (!request.isSucceed()) {
@@ -102,7 +109,13 @@ public class QCEntityDAOImpl implements QCEntityDAO {
     }
 
     public List<QCEntity> query(QCEntity entity, String queryString) {
-        GetQCEntitiesRequest request = new GetQCEntitiesRequest(entity,queryString);
+        GetQCEntitiesRequest request;
+		try {
+			request = new GetQCEntitiesRequest(entity,queryString);
+		} catch (UnsupportedEncodingException e) {
+			request = null;
+			logAndException(e.toString());
+		}
         QCRestClient.getInstance().run(request);
         
         if (!request.isSucceed()) {

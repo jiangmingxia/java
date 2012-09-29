@@ -9,4 +9,8 @@ public interface QCEntityDAO extends BaseDAO<QCEntity> {
     QCEntity get(QCEntity entity, long id);
 
     public List<QCEntity> query(QCEntity entity);
+    
+    public List<QCEntity> query(QCEntity entity, boolean isComplexQuery);
+    
+    public List<QCEntity> query(QCEntity entity, String queryString);
 }

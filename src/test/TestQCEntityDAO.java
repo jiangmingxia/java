@@ -1,6 +1,8 @@
 package test;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +18,9 @@ import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
+import com.hp.jmx.qc.util.EntityUtil;
+import com.hp.jmx.qc.util.FolderUtil;
+import com.hp.jmx.qc.util.TestSetUtil;
 
 public class TestQCEntityDAO {
     
@@ -36,79 +41,30 @@ public class TestQCEntityDAO {
 //    		System.out.println("Create test set successfully done.");
 //    	}
     	
-    	String input = "2012/06/30 6:56:11 : Scenario Name: Scenario17 Deploy Mode: /Isolate/Common Proxy/WebServer Authentication: /Forward Proxy/NTLM Authentication/No WebServer Authentication IsSSL: True IsWebServer: False Result: True";    	
-    	String input2 = "asdf test{1}:pass fasdf";
-    	String pattern1 = " ?([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d)(\\-|\\/|\\.)(\\d{4}) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
-    	String pattern2 = " ?(\\d{4})(\\-|\\/|\\.)([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
-    	
-    	String pattern3 = "(\\S+) *: *(pass|fail|ini)($| +.*$)";
-    	
-    	Pattern p = Pattern.compile(pattern1);
-    	Matcher matcher=p.matcher(input);
-    	//System.out.println(matcher.matches());
-    	
-    	while (matcher.find()) {
-    	    int count = matcher.groupCount();
-    	    System.out.println("matcher.groupCount():"+count);
-    	    for (int i=1;i<=count;i++){
-    	        System.out.println("matcher.group("+i+"):"+matcher.group(i));
-    	    }
-			
+    	//testQuery();
+    	//instanceQuery();
+    	//createQuery();
+    	System.out.println(createQuery());
+    	String full = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query={user-03[apollo or \"\"]}";
+    	String a = "{user-03[apollo or \"\"]}";
+    	try {			
+			String url = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query="+URLEncoder.encode(a, "UTF-8");
+			String url2 = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query="
+				+URLEncoder.encode("{user-03[apollo","UTF-8")+" "
+				+URLEncoder.encode("or","UTF-8")+" "
+				+URLEncoder.encode("\"\"]}","UTF-8");
+			System.out.println(url2);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-    	
-    	p = Pattern.compile(pattern2);
-        matcher=p.matcher(input);
-        //System.out.println(matcher.matches());
-        
-        while (matcher.find()) {
-            int count = matcher.groupCount();
-            System.out.println("matcher.groupCount():"+count);
-            for (int i=1;i<=count;i++){
-                System.out.println("matcher.group("+i+"):"+matcher.group(i));
-            }
-            
-        }
-        
-        p = Pattern.compile(pattern3);
-        matcher=p.matcher(input2);
-        //System.out.println(matcher.matches());
-        
-        while (matcher.find()) {
-            int count = matcher.groupCount();
-            System.out.println("matcher.groupCount():"+count);
-            for (int i=1;i<=count;i++){
-                System.out.println("matcher.group("+i+"):"+matcher.group(i));
-            }
-            
-        }
-        
-        //QC:    18:11:51       2009-01-28
-        DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
-        dateTimeFormat.setLenient(false);
-        Date date =null;
-        try {
-           
-                date = dateTimeFormat.parse("2012-11-31 23:23:33");
-                System.out.println("你输入的日期合法");
-        } catch (Exception e) {
-            System.out.println("你输入的日期不合法，请重新输入");
-        }
-        
-        File file = new File("C:\\Users\\jiamingx\\Downloads\\ts1.txt");
-        Date d1 = new Date(file.lastModified());
-        Date d2 = new Date(2010,12,10,11,24,38);
-        dateTimeFormat.format(d2);
-        System.out.println(dateTimeFormat.format(d2));
-    	
     }
 
     private static QCEntity testQuery() {
-        QCEntity entity = new QCEntity(EntityObject.TEST_TYPE, KeyType.FIELD_NAME);
-        entity.put("parent-id", "1001");
-        entity.put("subtype-id", "MANUAL");
+        QCEntity entity = new QCEntity(EntityObject.TEST_SET_TYPE, KeyType.FIELD_NAME);
+        entity.put("user-03", "apollo or a");       
         
-        List<QCEntity> entities = entityDAO.query(entity);
+        List<QCEntity> entities = entityDAO.query(entity,true);
         
         for (QCEntity item : entities) {
         	
@@ -131,6 +87,38 @@ public class TestQCEntityDAO {
         }
         
         return entity;
+    }
+    
+    private static QCEntity instanceQuery() {
+        QCEntity entity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE, KeyType.FIELD_NAME);
+        //entity.put("parent-id", "2");
+        entity.put("contains-test-set.id", "5");
+        
+        
+        List<QCEntity> entities = entityDAO.query(entity);
+        
+        for (QCEntity item : entities) {        	
+            System.out.println("The queried test is : " + item);            
+        }
+        
+        return entity;
+    }
+    
+    private static QCEntity createQuery() {
+        QCEntity entity = new QCEntity(EntityObject.RUN_TYPE, KeyType.FIELD_NAME);
+        //entity.put("parent-id", "2");
+        entity.put("name", "auto_9_29");
+        entity.put("cycle-id", "5");
+        entity.put("testcycl-id", "28");
+        entity.put("status", "Failed");
+        entity.put("test-id", "3");
+        entity.put("owner", "dela");
+        entity.put("subtype-id", "hp.qc.run.MANUAL");
+        //entity.put("", "");
+        entityDAO.save(entity);
+        System.out.println("The run id is : " + entity.getEntityId());
+        return entity;
+       
     }
 
     private static QCEntity testCreate() {
