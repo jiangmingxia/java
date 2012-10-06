@@ -163,23 +163,10 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         }
         sb.append("}");
         
-        //to encode non-space chars
-//        String query = sb.toString();
-//        String[] nonSpaces= query.split(" ");        
-//        sb = new StringBuffer("query=");
-//        first = true;
-//        for (String item:nonSpaces) {
-//        	if (!first) {
-//                sb.append(" ");
-//            }
-//        	if (item.isEmpty()) continue;
-//        	sb.append(URLEncoder.encode(item, "UTF-8"));
-//        	first = false;
-//        }
-//        sb.append("}");
+        String queryString = URLEncoder.encode(sb.toString(), "UTF-8");
+        queryString.replace("+", "%20");   // replace the '+' to '%20', since the QC server only support RFC 2396 and URLEncoder encode based on application/x-www-form-urlencoded
          
-        String filterString = "query="+URLEncoder.encode(sb.toString(), "UTF-8");
-        //String filterString = "query="+sb.toString();
+        String filterString = "query=" + queryString;
         log.info("The query string is: " + filterString);    
 		
         return filterString;

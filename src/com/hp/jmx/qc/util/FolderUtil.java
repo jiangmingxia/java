@@ -1,5 +1,6 @@
 package com.hp.jmx.qc.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.jmx.qc.dao.QCEntityDAO;
@@ -19,6 +20,9 @@ public class FolderUtil {
 		
 	private static final String TestSetRootFolderId = "0";
 	private static String TestSetSourceFolderId; //automation source test set folder id
+	
+	private static List<String> sourceTestSetFolders;
+	private static List<String> sourceTestFolders;
 	
 	
 	/**
@@ -117,6 +121,20 @@ public class FolderUtil {
 		return false;
 	}	
 	
+	//return true if folder is ancestor of the test 
+    public static boolean isTestFolderAncestor(String folderId, String testId){
+        QCEntity testEntity = TestUtil.getTestById(testId);
+        String parentId= testEntity.getEntityParentId();
+        QCEntity testFolderEntity;
+        while (!parentId.equals(folderId)&&!parentId.equals(getTestRootFolderId())) {
+            testFolderEntity = FolderUtil.getTestFolderById(parentId);
+            parentId = testFolderEntity.getEntityParentId();
+        }
+        
+        if (parentId.equals(folderId)) return true;     
+        return false;
+    }   
+	
 	public static QCEntity getTestFolderById(String id){
 		return EntityUtil.getEntityById(EntityObject.TEST_FOLDER_TYPE, id);
 	}
@@ -198,5 +216,45 @@ public class FolderUtil {
 		}
 		return TestSetSourceFolderId;
 	}
+	
+	//return all folders Id under given folder, the first element is the given folder id
+	private static List<String> getAllSubFolderIds(String entityType, String root){
+	    List<String> folderIds = new ArrayList<String>();
+	    folderIds.add(root);
+	    
+	    //sub folder Ids
+	    QCEntity entity = new QCEntity(entityType, KeyType.FIELD_NAME);          
+        entity.put("parent-id", root);
+        List<QCEntity> entities = entityDAO.query(entity);
+        if (entities.size()==0){
+            return folderIds;
+        }
+        for (QCEntity subFolder: entities) {
+            List<String> subFolderIds = getAllSubFolderIds(entityType,subFolder.getEntityId());
+            for (String id: subFolderIds){
+                folderIds.add(id);
+            }
+        }
+        
+        return folderIds;
+	}
+	
+	//get all source test set folder Ids
+	public static List<String> getSourceTestSetFolders() {
+	    if (sourceTestSetFolders ==null){
+	        sourceTestSetFolders = getAllSubFolderIds(EntityObject.TEST_SET_FOLDER_TYPE,getTestSetSourceFolderId());
+	    } 
+	    
+	    return sourceTestSetFolders;
+	}
+	
+	//get all source test folder Ids
+    public static List<String> getSourceTestFolders() {
+        if (sourceTestFolders ==null){
+            sourceTestFolders = getAllSubFolderIds(EntityObject.TEST_FOLDER_TYPE,getTestSourceFolderId());
+        } 
+        
+        return sourceTestFolders;
+    }
 
 }

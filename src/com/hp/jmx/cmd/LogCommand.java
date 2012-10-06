@@ -6,16 +6,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import com.hp.jmx.qc.dao.QCEntityDAO;
+import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.rest.QCRestConfig;
 import com.hp.jmx.qc.util.InstanceUtil;
 
@@ -25,6 +24,8 @@ public class LogCommand implements Command {
 	public final static String command_name = "log";	
 	private final static String FileOption = "file";
 	private final static String DetailsOption = "details";	
+	private static boolean SaveToSourceTestSetWhenNotFound = true;
+	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
 
 	@Override
 	public boolean execute(Hashtable<String,String> options) {
@@ -40,6 +41,7 @@ public class LogCommand implements Command {
 		//read log file, get test result		
 		LogUtil logUtil=LogUtilFactory.getLogUtil();
 		Map<String, LogUtil.TestInfo> tests = new HashMap<String, LogUtil.TestInfo>(); 
+		Date maxDate=null,minDate=null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(logFileName));
 			String s = null;
@@ -61,11 +63,27 @@ public class LogCommand implements Command {
 				//match: date time
 				Date testExecDate = logUtil.getDateFromString(s);
 				if (testExecDate==null) {
-					ti.setDate(null);
-				} else {
-					ti.setDate(testExecDate);
-				}
+				    testExecDate = logDate;
+				} 
+				ti.setDate(testExecDate);				
 				tests.put(test[0], ti);
+				
+				//update min,max date				
+				if (maxDate == null) {
+	                maxDate=testExecDate;
+	            } else {
+	                if (testExecDate.after(maxDate)) {
+	                    maxDate=testExecDate;
+	                }
+	            }
+				
+				if (minDate == null) {
+				    minDate=testExecDate;
+                } else {
+                    if (testExecDate.before(minDate)) {
+                        minDate=testExecDate;
+                    }
+                }
 			}			
 			br.close();
 		} catch (FileNotFoundException e1) {			
@@ -101,13 +119,24 @@ public class LogCommand implements Command {
 		}
 		
 		//insert run result to QC
-		//1.select test set: 1)match details: is empty or same as details
-		//2)has this test in it
-		//3)start date >= test set open date && start date <= close date if exists. if not exists, don't compare its close date
-		//not under test set source location
-		//if not found 1,2,3,4, try 2 and test set under source location(maybe under source sub folder), the first find one
+		//1.select testset match details and max/min test run time
+		//1) foreach details either = value or empty
+		//2) testset start date earlier than max run date, end date either empty or later than min run date
+		//3) testset is not under source folder/subfolder
 		
 		
+		//2.get all instances of these test set, save to testsetId->testset entity, instanceId->testsetId
+		//3.get all instances' test entity, save to instance Id->test entity
+		
+		//4.select all source test sets (Y/N)
+		//5.get all instances of these test set, save to instanceId->testsetId
+		//6.get all instances' test id: save to instanceId->testId
+		
+		//foreach test run: testname:status
+		//1) according to testname, find corresponding test entity, test instanceIds, testset Ids: List<String[3]>
+		//2) according to testset Id get test set entities, check if its close date, start date meet the test run date
+		//3) if find one result: insert this run
+		//   if not find one: try to save it to source test set (the first find one)
 		
 		return true;
 	}

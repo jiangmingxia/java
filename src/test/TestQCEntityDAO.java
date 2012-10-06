@@ -28,41 +28,14 @@ public class TestQCEntityDAO {
     
     @SuppressWarnings("deprecation")
 	public static void main(String[] args) {
-        //QCEntity entity = testCreate();
-        //testQuery();
-//    	String cmd = "create_testset -name myTS3 -file C:\\Users\\jiamingx\\Downloads\\ts1.txt";
-//    	Command cmdor = CommandFactory.getCommand(CommandReader.getCommandName(cmd));
-//    	if (cmdor == null) {
-//    		return;
-//    	}
-//    	if (!cmdor.execute(CommandReader.getOptions(cmd))){
-//    		System.out.println("Error occurs during creating testset!");
-//    	} else {
-//    		System.out.println("Create test set successfully done.");
-//    	}
-    	
-    	//testQuery();
+    	testQuery();
     	//instanceQuery();
     	//createQuery();
-    	System.out.println(createQuery());
-    	String full = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query={user-03[apollo or \"\"]}";
-    	String a = "{user-03[apollo or \"\"]}";
-    	try {			
-			String url = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query="+URLEncoder.encode(a, "UTF-8");
-			String url2 = "http://16.186.75.47:8080/qcbin/rest/domains/DELA/projects/vm73_p1_noext/test-sets?query="
-				+URLEncoder.encode("{user-03[apollo","UTF-8")+" "
-				+URLEncoder.encode("or","UTF-8")+" "
-				+URLEncoder.encode("\"\"]}","UTF-8");
-			System.out.println(url2);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 
     private static QCEntity testQuery() {
-        QCEntity entity = new QCEntity(EntityObject.TEST_SET_TYPE, KeyType.FIELD_NAME);
-        entity.put("user-03", "apollo or a");       
+        QCEntity entity = new QCEntity(EntityObject.TEST_TYPE, KeyType.FIELD_NAME);
+        entity.put("user-01", "apollo or a");       
         
         List<QCEntity> entities = entityDAO.query(entity,true);
         
@@ -133,4 +106,6 @@ public class TestQCEntityDAO {
         
         return entity;
     }
+    
+    
 }

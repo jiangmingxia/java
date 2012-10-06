@@ -39,15 +39,25 @@ public class TestUtil {
 		return entity;
 	}
 	
-	public static QCEntity getTestByName(String name) {
-		String folderId = FolderUtil.getTestSourceFolderId();
+	//search test with specified name and check if it is source test.
+	//if it is source test return the result
+	//Note: we have assumption that test names under source folders are all different. 
+	public static QCEntity getTestByName(String name) {		
 		QCEntity entity = new QCEntity(EntityObject.TEST_TYPE, KeyType.FIELD_NAME);
 		entity.put("name", name);
-		entity.put("parent-id", folderId);
 		
 		List<QCEntity> entities = entityDAO.query(entity);
 		if (entities.size()<1) return null;
-		return entities.get(0);
+		List<String> folderIds = FolderUtil.getSourceTestFolders();
+		for (QCEntity test: entities) {
+		    String parentId = test.getEntityParentId();
+		    for (String testFolderId : folderIds) {
+		        if (parentId.equals(testFolderId)) {
+		            return test;
+		        }
+		    }
+		}
+		return null;
 	}
 	
 	public static QCEntity getTestById(String id){
