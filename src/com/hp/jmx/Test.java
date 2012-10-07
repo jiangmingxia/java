@@ -263,34 +263,22 @@ public class Test {
 		if (args.length > 0 ) {
 			if (args[0].equalsIgnoreCase("dropDB")) {
 				test.dropDBs();
+				return;
 			}
 
 			if (args[0].equalsIgnoreCase("checkAdmin")) {
 				test.checkAdminDB();
+				return;
 			}
 			
 			if (args[0].equalsIgnoreCase("importDump")) {
 				test.restoreDB();
+				return;
 			}
-		}
-		
-		String a = "-a value1 -b -c value1, value2";
-		String[] b = a.split("-[a-zA-Z]*");
-		int j=1;
-		for (String bs:b)		{
-			System.out.println(j+":\""+bs+"\"");
-			j++;
-		}
-		
-		String pattern = "-[a-zA-Z]*";
-		Pattern p=Pattern.compile(pattern);		
-		Matcher matcher = p.matcher(a);
-		while (matcher.find()){
-			System.out.println(matcher.group());
-		}
-		
-	
-		
+			
+			String 
+			
+		}		
 	}
 	
 

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.Field;
 import com.hp.jmx.qc.rest.QCRestClient;
 
@@ -23,7 +24,7 @@ public class EntityFieldHelper {
     /** QC field name and the related field map. We can find the label, phisical name via this map. */
     private static final ConcurrentHashMap<String, Map<String, Field>> nameFieldMapCache = new ConcurrentHashMap<String, Map<String, Field>>();
 
-    private static final ConcurrentHashMap<String, Map<String, Field>> phisicalNameFieldMapCache = new ConcurrentHashMap<String, Map<String, Field>>();
+    private static final ConcurrentHashMap<String, Map<String, Field>> physicalNameFieldMapCache = new ConcurrentHashMap<String, Map<String, Field>>();
     
     private static List<Field> getFields(String entityType) {
         if (fieldsMapCache.containsKey(entityType)) 
@@ -79,9 +80,9 @@ public class EntityFieldHelper {
         
     }
 
-    public static Map<String, Field> getPhisicalNameFieldMap(String entityType) {
-        if (phisicalNameFieldMapCache.containsKey(entityType)) 
-            return phisicalNameFieldMapCache.get(entityType);
+    public static Map<String, Field> getPhysicalNameFieldMap(String entityType) {
+        if (physicalNameFieldMapCache.containsKey(entityType)) 
+            return physicalNameFieldMapCache.get(entityType);
         else {
             List<Field> fields = getFields(entityType);
             Map<String, Field> phisicalNameFieldMap = new HashMap<String, Field>();
@@ -91,10 +92,24 @@ public class EntityFieldHelper {
                     phisicalNameFieldMap.put(field.getPhysicalName(), field);
             }
             
-            phisicalNameFieldMapCache.putIfAbsent(entityType, phisicalNameFieldMap);
+            physicalNameFieldMapCache.putIfAbsent(entityType, phisicalNameFieldMap);
             return phisicalNameFieldMap;
         }
         
+    }
+        
+    public static String getFieldNameByLabel(String entityType,String label) {
+        Map<String, Field> labelFieldMap = getLabelFieldMap(entityType);
+        Field field = labelFieldMap.get(label);
+        if (field == null) return null;
+        return field.getName();
+    }
+    
+    public static String getFieldNameByPhysicalName(String entityType,String physicialName) {
+        Map<String, Field> physicalFieldMap = getPhysicalNameFieldMap(entityType);
+        Field field = physicalFieldMap.get(physicialName);
+        if (field == null) return null;
+        return field.getName();
     }
     
     private static void logAndException(String message) {

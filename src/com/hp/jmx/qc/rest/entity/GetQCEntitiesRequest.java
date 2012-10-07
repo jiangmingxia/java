@@ -179,7 +179,7 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
         else if (this.entity.getKeyType() == KeyType.FIELD_LABEL)
             return EntityFieldHelper.getLabelFieldMap(this.entity.getEntityType());
         else 
-            return EntityFieldHelper.getPhisicalNameFieldMap(this.entity.getEntityType());
+            return EntityFieldHelper.getPhysicalNameFieldMap(this.entity.getEntityType());
     }
 
     private void logAndException(String message) {

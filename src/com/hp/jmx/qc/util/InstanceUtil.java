@@ -11,7 +11,9 @@ import com.hp.jmx.qc.rest.entity.EntityListHelper;
 
 public class InstanceUtil {
 	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
-	private static final String defaultSubType="hp.qc.test-instance.MANUAL";
+	public static final String defaultSubType="hp.qc.test-instance.MANUAL";
+	public static final String CROSS_FIELD_TESTSET_ID="contains-test-set.id";
+	public static final String TEST_ID_FIELD="test-id";
 	
 	public static QCEntity addTestToTestSet(String testId,String testSetId){
 		QCEntity entity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE, KeyType.FIELD_NAME);
@@ -33,6 +35,12 @@ public class InstanceUtil {
 	
 	public static QCEntity getInstanceById(String id){
 		return EntityUtil.getEntityById(EntityObject.TEST_INSTANCE_TYPE, id);
+	}
+	
+	public static List<QCEntity> getTestSetAllInstances(String testSetId){
+	    QCEntity instanceEntity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE, KeyType.FIELD_NAME);
+        instanceEntity.put(CROSS_FIELD_TESTSET_ID, testSetId);
+        return entityDAO.query(instanceEntity);
 	}
 
 }

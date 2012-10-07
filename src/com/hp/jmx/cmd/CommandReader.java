@@ -7,33 +7,24 @@ import java.util.regex.Pattern;
 public class CommandReader {
 
 	//get command part
-	public static String getCommandName(String input){
-		input = input.trim();
-		
-		//remove options which are begin with "-"
-		int index = input.indexOf("-");
-		String command = input;
-		if (index >0)	command = input.substring(0,index);
-		
-		//remove extra blank spaces between command words
-		String[] words = command.split(" ");
-		command = "";
-		for (String word : words){
-			word = word.trim();
-			if (word.equals("")) continue;			
-			command+=word+" ";
-		}
-		return command.trim();		
+	public static String getCommandName(String[] args){
+	    StringBuffer command=new StringBuffer();
+	    boolean first = true;
+	    for (String arg:args) {
+	        if (arg.startsWith("-")) break;
+	        if (!first) command.append(" ");
+	        first=false;
+	        command.append(arg);
+	    }
+	    return command.toString();
 	}
 	
 	//get option part of this command
-	public static Hashtable<String,String> getOptions(String input){
-		input = input.trim();	
-		//get options part
-		int index = input.indexOf("-");
-		if (index <0){
-			return null;
-		}		
+	public static Hashtable<String,String> getOptions(String[] args){
+	    Hashtable<String,String> options = new Hashtable<String,String>();
+	    for (String arg:args) {
+	        
+	    }		
 		
 		//options: -a value1 -b -c value1, value2
 		Hashtable<String,String> options = new Hashtable<String,String>();

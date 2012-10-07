@@ -10,7 +10,7 @@ import com.hp.jmx.qc.model.QCEntity;
 
 public class TestUtil {
 	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
-	private static final String defaultSubType="MANUAL";
+	public static final String defaultSubType="MANUAL";
 	
 	public static boolean isTestExists(String name){
 		String parentId = FolderUtil.getTestSourceFolderId();

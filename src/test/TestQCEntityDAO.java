@@ -1,36 +1,33 @@
 package test;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.hp.jmx.cmd.Command;
-import com.hp.jmx.cmd.CommandFactory;
-import com.hp.jmx.cmd.CommandReader;
 import com.hp.jmx.qc.dao.QCEntityDAO;
 import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
-import com.hp.jmx.qc.util.EntityUtil;
-import com.hp.jmx.qc.util.FolderUtil;
-import com.hp.jmx.qc.util.TestSetUtil;
 
 public class TestQCEntityDAO {
     
     private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
     
-    @SuppressWarnings("deprecation")
-	public static void main(String[] args) {
-    	testQuery();
+    
+	public static void main(String[] args) throws Exception {
+    	//testQuery();
     	//instanceQuery();
     	//createQuery();
+	    Date a =new Date();
+	    DateFormat df1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    DateFormat df2=new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+	    String dateString = "2012-12-13 12:11:10";
+	    //Date resultDate= df2.parse(dateString);
+	    System.out.println(df2.format(a));
+	    
+        
     }
 
     private static QCEntity testQuery() {
