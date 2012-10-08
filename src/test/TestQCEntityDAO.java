@@ -97,7 +97,7 @@ public class TestQCEntityDAO {
         entity.put("parent-id", "1001");
         entity.put("subtype-id", "MANUAL");
         
-        entityDAO.save(entity);
+        entityDAO.update(entity);
         
         System.out.println("The test id is : " + entity.getEntityId());
         

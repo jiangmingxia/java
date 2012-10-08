@@ -162,9 +162,10 @@ public class GetQCEntitiesRequest extends AbstractQCRestRequest{
             }
         }
         sb.append("}");
-        
-        String queryString = URLEncoder.encode(sb.toString(), "UTF-8");
-        queryString.replace("+", "%20");   // replace the '+' to '%20', since the QC server only support RFC 2396 and URLEncoder encode based on application/x-www-form-urlencoded
+        String queryBeforeEncode=sb.toString();
+        //System.out.println(queryBeforeEncode);
+        String queryString = URLEncoder.encode(queryBeforeEncode, "UTF-8");
+        queryString = queryString.replace("+", "%20");   // replace the '+' to '%20', since the QC server only support RFC 2396 and URLEncoder encode based on application/x-www-form-urlencoded
          
         String filterString = "query=" + queryString;
         log.info("The query string is: " + filterString);    

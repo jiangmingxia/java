@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.RandomAccessFile;
 
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -12,6 +13,10 @@ import java.util.regex.Pattern;
 
 
 import java.io.Console;
+
+import com.hp.jmx.cmd.Command;
+import com.hp.jmx.cmd.CommandFactory;
+import com.hp.jmx.cmd.CommandReader;
 
 public class Test {
 
@@ -214,16 +219,6 @@ public class Test {
 	}
 
 	public void restoreDB() throws Exception {
-//		Console console = System.console();
-//		if (console != null) {
-//			String deleteSA = new String(console.readLine(
-//					"Input any key when ready:",
-//					new Object[0]));
-//			System.out.println("You are pressing:"+deleteSA);
-//		} else {
-//			System.out.println("No Console!");
-//		}
-		
 		try {
 			AccessorFactory.init();
 		} catch (ClassNotFoundException e) {
@@ -276,7 +271,15 @@ public class Test {
 				return;
 			}
 			
-			String 
+			String commandName=CommandReader.getCommandName(args);
+			Hashtable<String, String> options = CommandReader.getOptions(args);
+			Command command = CommandFactory.getCommand(commandName);
+			if (command!=null) {
+				command.execute(options);
+				System.out.println("Successfully done.");
+			} else {
+				System.out.println("Error");
+			}
 			
 		}		
 	}

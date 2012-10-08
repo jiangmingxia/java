@@ -10,6 +10,7 @@ public class EntityUtil {
 	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
 	public static final String NAME_FIELD="name";
     public static final String PARENT_ID_FIELD="parent-id";
+    public static final String ID_FIELD="id";
     
     public final static String QCDateTimeFormatPattern="yyyy-MM-dd HH:mm:ss";
     public final static String QCDateFormatPattern="yyyy-MM-dd";

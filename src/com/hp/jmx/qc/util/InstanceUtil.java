@@ -14,6 +14,7 @@ public class InstanceUtil {
 	public static final String defaultSubType="hp.qc.test-instance.MANUAL";
 	public static final String CROSS_FIELD_TESTSET_ID="contains-test-set.id";
 	public static final String TEST_ID_FIELD="test-id";
+	public static final String STATUS_FIELD="status";
 	
 	public static QCEntity addTestToTestSet(String testId,String testSetId){
 		QCEntity entity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE, KeyType.FIELD_NAME);
@@ -41,6 +42,15 @@ public class InstanceUtil {
 	    QCEntity instanceEntity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE, KeyType.FIELD_NAME);
         instanceEntity.put(CROSS_FIELD_TESTSET_ID, testSetId);
         return entityDAO.query(instanceEntity);
+	}
+	
+	public static QCEntity updateInstanceStatus(String instanceId,String status){
+		QCEntity entity = new QCEntity(EntityObject.TEST_INSTANCE_TYPE,
+				KeyType.FIELD_NAME);
+		entity.put(EntityUtil.ID_FIELD, instanceId);
+		entity.put(STATUS_FIELD, status);		
+		entityDAO.update(entity);
+		return entity;
 	}
 
 }

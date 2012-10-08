@@ -13,7 +13,7 @@ import com.hp.jmx.qc.rest.EntityNotFoundException;
 import com.hp.jmx.qc.rest.QCRestClient;
 import com.hp.jmx.qc.rest.QCRestRequest;
 import com.hp.jmx.qc.rest.QCRestWSException;
-import com.hp.jmx.qc.rest.entity.GetEntitiesQCRestRequest;
+//import com.hp.jmx.qc.rest.entity.GetEntitiesQCRestRequest;
 import com.hp.jmx.qc.rest.entity.GetQCEntitiesRequest;
 import com.hp.jmx.qc.rest.entity.QCEntityRequest;
 

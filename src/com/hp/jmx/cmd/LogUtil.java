@@ -105,8 +105,8 @@ public class LogUtil {
 		Matcher m = dateTimePattern1.matcher(input);
 		if (m.find()) {			
 			year = Integer.parseInt(m.group(5));
-			month =Integer.parseInt(m.group(3));
-			date = Integer.parseInt(m.group(1));
+			month =Integer.parseInt(m.group(1));
+			date = Integer.parseInt(m.group(3));
 			hour = Integer.parseInt(m.group(6));
 			min = Integer.parseInt(m.group(7));
 			sec = Integer.parseInt(m.group(8));
@@ -130,8 +130,7 @@ public class LogUtil {
 		if (AMPMtag!=null && AMPMtag.equalsIgnoreCase("PM")) {
 			hour=hour+12;				
 		}
-		String dateString = year+"-"+month+"-"+date+" "+hour+":"+min+":"+sec;
-		System.out.println("dateString:"+dateString);
+		String dateString = year+"-"+month+"-"+date+" "+hour+":"+min+":"+sec;		
 		try {
 			resultDate = QCDateTimeFormat.parse(dateString);
 			return resultDate;
