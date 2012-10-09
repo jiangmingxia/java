@@ -29,6 +29,10 @@ public class LogUtil {
 	public DateFormat QCDateTimeFormat;
 	public DateFormat QCDateFormat;
 	
+	//design:
+	//{"test name":"xxxx","run time":"MM\dd\yyyy HH:mm:ss","result":""}
+	
+	
 	public class TestInfo {
 		private String name;
 		private String runResult;

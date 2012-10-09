@@ -58,6 +58,7 @@ public class AccessorFactory {
 			serverAddr = s1 + s2;
 			valueString = getDBConfigProperties().getProperty(serverAddr);
 		}
+		if (valueString == null) return null;
 		return valueString.split(":");
 	}
 	
@@ -152,6 +153,8 @@ public class AccessorFactory {
 				}
 			}
 		}
+		System.out.println("Cannot find username and password for server: "+serverAddr);
+		System.out.println("Please ensure it is in file "+DB_CONFIG_PROP_FILE);
 		return null;
 	}
 }

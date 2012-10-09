@@ -36,6 +36,7 @@ public class Test {
 	public void upgrade() throws Exception {
 		try {
 			AccessorFactory.init();
+			
 		} catch (ClassNotFoundException e) {
 			System.out.println("The AccessorFactory init failed.");
 			throw e;
@@ -197,13 +198,19 @@ public class Test {
 		String dbName = "master";
 		DBAccessor dbAccessor = AccessorFactory.getDBAccessor(JDBCUrl, dbName,
 				true);
-
+        if (dbAccessor == null) {
+        	System.out.println("Fail to access: "+JDBCUrl);
+        	return;
+        }
 		List<Object> adminDBNames = dbAccessor.getAllDBName("admin_db");
 
 		for (Object name : adminDBNames) {
 			String adminDBName = ((String[]) name)[0];
 			DBAccessor adminDBAccessor = AccessorFactory.getDBAccessor(JDBCUrl,
 					adminDBName, true);
+			if (adminDBAccessor==null) {
+				System.out.println("Fail to access: "+JDBCUrl);
+			}
 			String appServerName = adminDBAccessor.getAppServerName();
 			String appVersion = adminDBAccessor.getServerVersion();
 			System.out.print(adminDBName + "   ");
@@ -230,7 +237,9 @@ public class Test {
 		String oracleSpace = getConfigs().get(ORACLE_DATA_SPACE);
 		DBAccessor dbAccessor = AccessorFactory.getDBAccessor(url, null,
 				true);	
-		
+		if (dbAccessor==null) {
+			System.out.println("Fail to access: "+url);
+		}
 		DBDump dump = DBDumpFactory.getDBDump(dumpFile,url,oracleSpace,(OracleDBAccessor)dbAccessor);
 		if (dump==null) {
 			return;
