@@ -30,7 +30,9 @@ public class LogUtil {
 	public DateFormat QCDateFormat;
 	
 	//design:
-	//{"test name":"xxxx","run time":"MM\dd\yyyy HH:mm:ss","result":""}
+	//{"test":"xxxx","run time":"MM\dd\yyyy HH:mm:ss AM|PM|am|pm","result":"Passed|Failed|Blocked|...."}
+	//{"field":"xxxx","value":"xxxx"}
+	//{"field":"xxxx","value":"xxxx"}
 	
 	
 	public class TestInfo {

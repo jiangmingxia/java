@@ -162,6 +162,7 @@ public class Test {
 
 			DBAccessor projectAccessor = AccessorFactory.getDBAccessor(dbURL,
 					dbName, false);
+			if (projectAccessor==null) continue;
 			projectAccessor.dropCurrentDB();
 		}
 

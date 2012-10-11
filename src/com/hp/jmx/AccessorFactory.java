@@ -153,7 +153,11 @@ public class AccessorFactory {
 				}
 			}
 		}
-		System.out.println("Cannot find username and password for server: "+serverAddr);
+		if (dbName==null){
+			System.out.println("Cannot find username and password for server: "+serverAddr);
+		} else {
+			System.out.println("Cannot find username and password for server: "+serverAddr+" with database "+dbName);
+		}		
 		System.out.println("Please ensure it is in file "+DB_CONFIG_PROP_FILE);
 		return null;
 	}
