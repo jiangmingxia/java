@@ -20,6 +20,10 @@ public class QCRestClient {
 	
 	private static final QCRestClient instance = new QCRestClient();
 	
+	private String ssoCookieValue;
+	
+	private String qcSessionCookieValue;
+	
 	private QCRestClient() {
 	    
 	}
@@ -30,16 +34,22 @@ public class QCRestClient {
 	
 	public void run(QCRestRequest request) throws QCRestWSException {
         HttpURLConnection conn = null;
-        String ssoCookieValue = null;
-        String qcSessionCookieValue = null;
 
         try {
             // (1) authenticate
-            ssoCookieValue = this.authenticate();
+            if (ssoCookieValue == null)
+                this.authenticate();
 
             // (2) build the request
-            conn = this.sendRequest(request, ssoCookieValue);
+            conn = this.sendRequest(request);
 
+            final int responseCode = conn.getResponseCode();
+            // give another try
+            if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                this.authenticate();
+                conn = this.sendRequest(request);
+            }
+            
             // (3) handle the response
             this.handleResponse(request, conn);
         }  catch (final QCRestWSException e) {
@@ -49,24 +59,18 @@ public class QCRestClient {
             log.error("REST Web Service error(Other Exception):", e);
             throw new QCRestWSException("Error to call the rest API.", e);
         } finally {
-            // (4) close QC session
-            try {
-                // release current connection
-                if (conn != null) {
-                    conn.disconnect();
-                }
+            // release current connection
+            if (conn != null) {
+                conn.disconnect();
+            }
 
-                // logout needs set the 2 cookies: LWSSO_COOKIE_KEY & QCSession
-                // in the request.
-                if (ssoCookieValue != null) {
-                    // logout
-                    qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
-                    // get return cookie
-                    log.debug("Cookie for QCSession: " + qcSessionCookieValue);
-                    this.logoutSession(QCRestConfig.getQCRestURL(), ssoCookieValue, qcSessionCookieValue);
-                }
-            } catch (final IOException e) {
-                log.error("Error occurs while Closing the REST Client session!");
+            // logout needs set the 2 cookies: LWSSO_COOKIE_KEY & QCSession
+            // in the request.
+            if (ssoCookieValue != null) {
+                // logout
+                qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
+                // get return cookie
+                log.debug("Cookie for QCSession: " + qcSessionCookieValue);
             }
         }
 	}
@@ -112,7 +116,7 @@ public class QCRestClient {
         }
 
         // get return cookie
-        final String ssoCookieValue = this.getCookieValue(conn, "LWSSO_COOKIE_KEY");
+        ssoCookieValue = this.getCookieValue(conn, "LWSSO_COOKIE_KEY");
         log.debug("Cookie for LWSSO_COOKIE_KEY: " + ssoCookieValue);
 
         // disconnect
@@ -120,14 +124,14 @@ public class QCRestClient {
         return ssoCookieValue;
     }
 
-    protected HttpURLConnection sendRequest(QCRestRequest request, String ssoCookieValue) throws IOException, QCRestWSException
+    protected HttpURLConnection sendRequest(QCRestRequest request) throws IOException, QCRestWSException
     {
         // post the output stream
         final URL url = new URL(request.getRequestURL());        
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
         this.setTimeout(conn);
-        this.buildHeader(request, conn, ssoCookieValue);
+        this.buildHeader(request, conn);
         this.buildBody(request, conn);
         conn.connect();
         return conn;
@@ -151,15 +155,19 @@ public class QCRestClient {
      * Build the request header. POST/PUT: we need to set the output of the
      * connection; DELETE/GET: we needn't to set the output of the connection.
      * @param conn
-     * @param ssoCookieValue
      * @throws IOException
      */
-    protected void buildHeader(QCRestRequest request, HttpURLConnection conn, String ssoCookieValue) throws IOException {
+    protected void buildHeader(QCRestRequest request, HttpURLConnection conn) throws IOException {
         // set the cookie
-        conn.setRequestProperty("Cookie", "LWSSO_COOKIE_KEY=" + ssoCookieValue);
-        conn.setRequestProperty("Content-Type", "application/xml;charset=UTF-8");
-        conn.setRequestProperty("Accept", "application/xml");
+        setCookie(conn);
+        conn.addRequestProperty("Content-Type", "application/xml;charset=UTF-8");
+        conn.addRequestProperty("Accept", "application/xml");
         conn.setRequestMethod(request.getOperationMethod());
+    }
+    
+    private void setCookie(HttpURLConnection conn) {
+        String cookieValue = "LWSSO_COOKIE_KEY=" + ssoCookieValue + "; " + "QCSession=" + qcSessionCookieValue;
+        conn.setRequestProperty("Cookie", cookieValue);       
     }
     
     protected void buildBody(QCRestRequest request, HttpURLConnection conn) throws IOException, QCRestWSException {
@@ -210,20 +218,17 @@ public class QCRestClient {
     /**
      * Logout from the QC session.
      * @param QCServerURL
-     * @param ssoCookieValue
-     * @throws IOException
      */
-    protected void logoutSession(final String QCServerURL, final String ssoCookieValue,
-            final String qcSessionCookieValue) throws IOException
+    protected void logoutSession(final String QCServerURL) throws IOException
     {
         final URL url = new URL(QCServerURL + "authentication-point/logout");
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
         this.setTimeout(conn);
+        conn.setRequestMethod(QCRestRequest.GET_METHOD);
 
         // set cookie
-        conn.setRequestProperty("Cookie", "LWSSO_COOKIE_KEY=" + ssoCookieValue);
-        conn.setRequestProperty("Cookie", "QCSession=" + qcSessionCookieValue);
+        setCookie(conn);
 
         // do get
         conn.connect();
