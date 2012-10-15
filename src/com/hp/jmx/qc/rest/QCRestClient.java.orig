@@ -37,14 +37,21 @@ public class QCRestClient {
 
         try {
             // (1) authenticate
+<<<<<<< HEAD
             if (ssoCookieValue == null)
                 this.authenticate();
-            System.out.println("ssoCookieValue after authentication = "+ssoCookieValue);
 
             // (2) build the request
             conn = this.sendRequest(request);
+=======
+            ssoCookieValue = this.authenticate();
+            System.out.println("ssoCookieValue after authentication = "+ssoCookieValue);
+
+            // (2) build the request
+            conn = this.sendRequest(request, ssoCookieValue);
             
             System.out.println ("QCSessionCookie after request = " + getCookieValue(conn, "QCSession"));
+>>>>>>> e65d0912d961d535f6de51b005d8dc8eeee9d53c
 
             final int responseCode = conn.getResponseCode();
             // give another try
@@ -68,6 +75,7 @@ public class QCRestClient {
                 conn.disconnect();
             }
 
+<<<<<<< HEAD
             // logout needs set the 2 cookies: LWSSO_COOKIE_KEY & QCSession
             // in the request.
             if (ssoCookieValue != null) {
@@ -75,6 +83,20 @@ public class QCRestClient {
                 qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
                 // get return cookie
                 log.debug("Cookie for QCSession: " + qcSessionCookieValue);
+=======
+                // logout needs set the 2 cookies: LWSSO_COOKIE_KEY & QCSession
+                // in the request.
+                if (ssoCookieValue != null) {
+                    // logout
+                    qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
+                    System.out.println ("Cookie for QCSession: " + qcSessionCookieValue);
+                    // get return cookie
+                    log.debug("Cookie for QCSession: " + qcSessionCookieValue);
+                    this.logoutSession(QCRestConfig.getQCRestURL(), ssoCookieValue, qcSessionCookieValue);
+                }
+            } catch (final IOException e) {
+                log.error("Error occurs while Closing the REST Client session!");
+>>>>>>> e65d0912d961d535f6de51b005d8dc8eeee9d53c
             }
         }
 	}

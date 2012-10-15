@@ -21,7 +21,16 @@ import com.hp.jmx.qc.util.InstanceUtil;
 public class LogUtil {
 	
 	private final static String Log_DateTimePattern1= " ?([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d)(\\-|\\/|\\.)(\\d{4}) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
-	private final static String Log_DateTimePattern2= " ?(\\d{4})(\\-|\\/|\\.)([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";	
+	private final static String Log_DateTimePattern2= " ?(\\d{4})(\\-|\\/|\\.)([01]?\\d)(\\-|\\/|\\.)([0-3]?\\d) +([012]?\\d):([0-5]\\d):([0-5]\\d) *(AM|PM|am|pm)? ?";
+	
+	
+	//JSON related static string
+	public final static String FIELD_NAME="field";
+	public final static String FIELD_VALUE="value";
+	public final static String TEST_NAME="test";
+	public final static String TEST_RUNTIME="run time";
+	public final static String TEST_RESULT="result";
+	
 	
 	private Pattern testResultPattern;
 	private Pattern dateTimePattern1;
@@ -157,12 +166,12 @@ public class LogUtil {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String s = null;            
             while ((s = br.readLine()) != null) {
-                s=s.trim();             
-                if (s.indexOf("=")<0) continue;
-                if (s.split("=").length!=2) continue;
-                String key = s.split("=")[0].trim();
-                String value = s.split("=")[1].trim();
-                if (key == null || key.isEmpty()) continue;
+                s=s.trim();    
+                Map<String,String> data = readJSON(s);
+                if (data!=null && data.size()<1) continue;
+                String key = data.get(FIELD_NAME);
+                String value = data.get(FIELD_VALUE);
+                if (key==null ||value == null) continue;
                 details.put(key, value);
             }           
             br.close();
@@ -176,6 +185,41 @@ public class LogUtil {
         }        
 	}
 	
+	//{"test":"<test name>","run time":"<run time of this test>","result":"<run status>"}	
+	//{"field":"platform","value":"Linux"}
+	private Map<String,String> readJSON(String oneLine) {
+		Map<String,String> data = new HashMap<String,String>();		
+		if (!oneLine.startsWith("{")||!oneLine.endsWith("}")||oneLine.length()<3) {			
+			return null;
+		}
+		oneLine = oneLine.substring(1,oneLine.length()-1); //remove {}
+		
+		String[] items = oneLine.split("\"\\s*,\\s*\"");		
+		//add " to each items since lost it during split
+		int length = items.length;
+		if (length>1) {
+			items[0] = items[0]+"\"";
+			items[length-1] = "\""+items[length-1];
+		}
+		for (int i=1;i<length-1;i++){
+			items[i] = "\""+items[i]+"\"";
+		}
+		
+		String pattern = "^\"([^\"]+)\"\\s*:\\s*\"([^\"]+)\"$";
+    	Pattern p=Pattern.compile(pattern);	
+    	Matcher matcher = null;
+		for (int i=0;i<length;i++) {
+			matcher = p.matcher(items[i]);
+			if (matcher.find()) {
+				data.put(matcher.group(1), matcher.group(2));				
+			} else {
+				//System.out.println("It should match \"<name>\":\"<value>\" pattern. But now it is "+items[i]);
+				return null;
+			}
+		}	
+		return data;
+	}
+	
 	/**
 	 * retrieve test run result and run time info from given file
 	 * @param fileName
@@ -187,14 +231,16 @@ public class LogUtil {
 	    Map<String, TestInfo> testRuns = new HashMap<String, TestInfo>(); 
 	    try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String s = null;
-            String logMode=QCRestConfig.getLogMode();
-            String logPrefix=QCRestConfig.getLogPrefix();
+            String s = null;            
             
             while ((s = br.readLine()) != null) {
-                s=s.trim();
-                if (skipLine(s,logMode,logPrefix)) continue; //skip line according to log config
+                s=s.trim();                
+                Map<String,String> data = readJSON(s);
+                if (data==null ||data.size()<1) continue; //skip not JSON format line
                 
+                String testName = data.get(TEST_NAME);
+                String runResult = data.get(TEST_RESULT);
+                String runTime = data.get(TEST_RUNTIME);
                 //match: test name : PASSED|FAILED|
                 //if match store the result
                 String[] test = getTestResult(s);
@@ -223,21 +269,21 @@ public class LogUtil {
 	}
 	
 	//determine whether to skip this line or not
-    private boolean skipLine(String line, String logMode,String logPrefix){     
-        if (line.isEmpty()) return true;            
-        
-        if (!logMode.equals(QCRestConfig.EXCLUDE)&&!logMode.equals(QCRestConfig.INCLUDE)) return false;
-        
-        if (logMode.equals(QCRestConfig.EXCLUDE)) {
-            //exclude the line start with the prefix
-            if (line.startsWith(logPrefix)) return true;
-            return false;
-        } else {
-            //include the line start with the prefix
-            if (line.startsWith(logPrefix)) return false;
-            return true;
-        }
-    }   
+//    private boolean skipLine(String line, String logMode,String logPrefix){     
+//        if (line.isEmpty()) return true;            
+//        
+//        if (!logMode.equals(QCRestConfig.EXCLUDE)&&!logMode.equals(QCRestConfig.INCLUDE)) return false;
+//        
+//        if (logMode.equals(QCRestConfig.EXCLUDE)) {
+//            //exclude the line start with the prefix
+//            if (line.startsWith(logPrefix)) return true;
+//            return false;
+//        } else {
+//            //include the line start with the prefix
+//            if (line.startsWith(logPrefix)) return false;
+//            return true;
+//        }
+//    }   
 	
 	
 }
