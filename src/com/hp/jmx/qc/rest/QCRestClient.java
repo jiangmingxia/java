@@ -36,12 +36,16 @@ public class QCRestClient {
         try {
             // (1) authenticate
             ssoCookieValue = this.authenticate();
+            System.out.println("ssoCookieValue after authentication = "+ssoCookieValue);
 
             // (2) build the request
             conn = this.sendRequest(request, ssoCookieValue);
+            
+            System.out.println ("QCSessionCookie after request = " + getCookieValue(conn, "QCSession"));
 
             // (3) handle the response
             this.handleResponse(request, conn);
+            System.out.println ("QCSessionCookie after handleResponse = " + getCookieValue(conn, "QCSession"));
         }  catch (final QCRestWSException e) {
             log.error("REST Web Service error(QCRestWSException):", e);
             throw e;
@@ -61,6 +65,7 @@ public class QCRestClient {
                 if (ssoCookieValue != null) {
                     // logout
                     qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
+                    System.out.println ("Cookie for QCSession: " + qcSessionCookieValue);
                     // get return cookie
                     log.debug("Cookie for QCSession: " + qcSessionCookieValue);
                     this.logoutSession(QCRestConfig.getQCRestURL(), ssoCookieValue, qcSessionCookieValue);
@@ -89,10 +94,7 @@ public class QCRestClient {
         final String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
 
         String QCRestURL = QCRestConfig.getQCRestURL();
-        if (!QCRestURL.endsWith("/")) QCRestURL = QCRestURL+"/";
-        //Maya:
-        //final URL url = new URL(QCRestConfig.getQCRestURL() + "authentication-point/authenticate");
-        //Apollo:        
+        if (!QCRestURL.endsWith("/")) QCRestURL = QCRestURL+"/";              
         final URL url = new URL(QCRestURL + "authentication-point/authenticate");
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
@@ -227,6 +229,8 @@ public class QCRestClient {
 
         // do get
         conn.connect();
+        System.out.println("Logout return code is:" + conn.getResponseCode());
+        
         log.debug("Logout return code is:" + conn.getResponseCode());
 
         // disconnect

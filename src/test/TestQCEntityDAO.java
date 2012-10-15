@@ -20,12 +20,8 @@ public class TestQCEntityDAO {
     	//testQuery();
     	//instanceQuery();
     	//createQuery();
-	    Date a =new Date();
-	    DateFormat df1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    DateFormat df2=new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-	    String dateString = "2012-12-13 12:11:10";
-	    //Date resultDate= df2.parse(dateString);
-	    System.out.println(df2.format(a));
+		
+	    
 	    
         
     }
