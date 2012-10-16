@@ -25,7 +25,7 @@ abstract class BaseDBDump implements DBDump {
 	//unit is M, so it is 50M
 	private static final double minTableSpaceSize = 100;
 
-	public BaseDBDump(String dumpFile, String url, String oracleDataSpace,OracleDBAccessor dbAccessor)
+	public BaseDBDump(String dumpFile, String url, String oracleDataSpace,OracleDBAccessor dbAccessor,String newSchemaName)
 			throws Exception {
 		// init private vars
 		int index = dumpFile.lastIndexOf(File.separator);
@@ -49,6 +49,11 @@ abstract class BaseDBDump implements DBDump {
 		this.importCmdFile = dumpDir + File.separator + "import_"
 				+ getNameNoExt(dumpName) + ".cmd";
 		this.dbAccessor=dbAccessor;
+		if (newSchemaName!=null) {
+			newSchema = newSchemaName;
+		} else {
+			newSchema="";
+		}
 	}
 
 	// return xxx if input xxx.xx, xxx.xx if input xxx.xx.xx
@@ -124,7 +129,9 @@ abstract class BaseDBDump implements DBDump {
 		}		
 		
 		//prepare the target schema name
-		newSchema=dbAccessor.getNoDuplicateDBName(oldSchema);
+		if (newSchema == null || newSchema.isEmpty()){
+			newSchema=dbAccessor.getNoDuplicateDBName(oldSchema);
+		}		
 		if (newSchema == null) return false; //fail to get a proper schema name
 		System.out.println("New schema name is: "+newSchema);
 				

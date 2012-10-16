@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.hp.jmx.qc.rest.QCRestConfig;
 import com.hp.jmx.qc.util.EntityUtil;
 import com.hp.jmx.qc.util.InstanceUtil;
 
@@ -71,8 +69,6 @@ public class LogUtil {
 	}
 	
 	public LogUtil(){
-		//compile all pattern
-		testResultPattern = Pattern.compile(LogUtil.getLogTestPattern());
 		dateTimePattern1 = Pattern.compile(Log_DateTimePattern1);
 		dateTimePattern2 = Pattern.compile(Log_DateTimePattern2);
 		QCDateTimeFormat= new SimpleDateFormat(EntityUtil.QCDateTimeFormatPattern);
@@ -81,35 +77,32 @@ public class LogUtil {
 		QCDateFormat.setLenient(false);
 	}
 	
-	private static String getLogTestPattern(){
-		List<String> allStatus = InstanceUtil.getListByName("Status");
-		StringBuffer sb = new StringBuffer();
-		sb.append("(\\S+) *: *(");
-		boolean first = true;
-		for (String status:allStatus){
-			if (!first) {
-				sb.append("|");				
+	//return pattern like: Passed|Failed|<other status in QC>|...
+	private Pattern getTestResultPattern(){
+		if (testResultPattern==null) {
+			List<String> allStatus = InstanceUtil.getListByName("Status");
+			if (allStatus==null || allStatus.size()<1) return null; //something wrong with the result
+			StringBuffer sb = new StringBuffer();
+			boolean first = true;
+			for (String status:allStatus){
+				if (!first) {
+					sb.append("|");				
+				}
+				sb.append(status);
+				first = false;
 			}
-			sb.append(status);
-			first = false;
+			testResultPattern = Pattern.compile(sb.toString());
 		}
-		sb.append(")($| +.*$)");
-		return sb.toString();
-	} 
+		return testResultPattern;
+	}
 	
-	//if not match return null
-	//if match String[0] is test name, String[1] is test run result
-	private String[] getTestResult(String input) {
-		String[] result = new String[2];
-		Matcher m = testResultPattern.matcher(input);
-		if (m.find()) {
-    	    result[0] = m.group(1);
-    	    result[1] = m.group(2);
-    	    return result;    	    
-		} else {
-			return null;
-		}
-	}	
+	//match run result with status in ALM/QC
+	private boolean matchResultPattern(String runResult){
+		Pattern resultPattern = getTestResultPattern();
+		Matcher m = resultPattern.matcher(runResult);
+		if (m.matches()) return true;
+		return false;
+	}
 	
 	private Date getDateFromString(String input) {				
 		Date resultDate;
@@ -241,21 +234,22 @@ public class LogUtil {
                 String testName = data.get(TEST_NAME);
                 String runResult = data.get(TEST_RESULT);
                 String runTime = data.get(TEST_RUNTIME);
-                //match: test name : PASSED|FAILED|
-                //if match store the result
-                String[] test = getTestResult(s);
-                if (test==null) continue; //skip line when not match <test name>:<run status>
+                if (testName==null || runResult == null) continue; //skip not line when no test name/result info
+                if (!matchResultPattern(runResult)) continue; //skip line when test run status is not consistent with ALM                              
                 TestInfo ti = new TestInfo();
-                ti.setName(test[0]);
-                ti.setRunResult(test[1]);               
+                ti.setName(testName);
+                ti.setRunResult(runResult); 
                 
-                //match: date time
-                Date testExecDate = getDateFromString(s);
-                if (testExecDate==null) {
-                    testExecDate = defaultDate;
-                } 
+                Date testExecDate = defaultDate;
+                if (runTime!=null) {
+                	//match date
+                	Date d = getDateFromString(runTime);
+                	if (d != null) {
+                		testExecDate = d;
+                	}
+                }
                 ti.setDate(testExecDate);               
-                testRuns.put(test[0], ti);
+                testRuns.put(testName, ti);
             }           
             br.close();
             return testRuns;
@@ -266,24 +260,5 @@ public class LogUtil {
             CommandOutput.errorOutput(e2.getMessage());
             return null;
         }
-	}
-	
-	//determine whether to skip this line or not
-//    private boolean skipLine(String line, String logMode,String logPrefix){     
-//        if (line.isEmpty()) return true;            
-//        
-//        if (!logMode.equals(QCRestConfig.EXCLUDE)&&!logMode.equals(QCRestConfig.INCLUDE)) return false;
-//        
-//        if (logMode.equals(QCRestConfig.EXCLUDE)) {
-//            //exclude the line start with the prefix
-//            if (line.startsWith(logPrefix)) return true;
-//            return false;
-//        } else {
-//            //include the line start with the prefix
-//            if (line.startsWith(logPrefix)) return false;
-//            return true;
-//        }
-//    }   
-	
-	
+	}	
 }
