@@ -154,12 +154,12 @@ public class LogCommand implements Command {
 		                CommandOutput.errorOutput("Cannot find instance for test with id "+testId);
 		                return false;
 		            }
-		            for (String instanceId:sourceInstances) {
-	                    String testSetId=sourceInstanceTestSetMap.get(instanceId);
-	                    if (RunUtil.createRun(testId, instanceId, testSetId, runStatus, runOwner, runDate,runDetails) == null) {
-                            return false;
-                        }
-	                }
+		            //just insert it into the first matched source instances
+		            String instanceId = sourceInstances.get(0);
+		            String testSetId=sourceInstanceTestSetMap.get(instanceId);
+                    if (RunUtil.createRun(testId, instanceId, testSetId, runStatus, runOwner, runDate,runDetails) == null) {
+                        return false;
+                    } 
 		        }
 		    }		    
 		}

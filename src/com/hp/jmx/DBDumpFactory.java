@@ -2,15 +2,15 @@ package com.hp.jmx;
 
 public class DBDumpFactory {
 
-	public static DBDump getDBDump(String dumpFile, String url, String oracleSpace, OracleDBAccessor dbAccessor) {
+	public static DBDump getDBDump(String dumpFile, String url, String oracleSpace, OracleDBAccessor dbAccessor, String newSchemaName) {
 		
 		try {
-			NormalDBDump nDump = new NormalDBDump(dumpFile,url,oracleSpace,dbAccessor);
+			NormalDBDump nDump = new NormalDBDump(dumpFile,url,oracleSpace,dbAccessor,newSchemaName);
 			if (nDump.getInfo()) {
 				System.out.println("This is normal dump file");
 				return nDump;
 			}
-			DPump dPump = new DPump(dumpFile, url, oracleSpace,dbAccessor);
+			DPump dPump = new DPump(dumpFile, url, oracleSpace,dbAccessor,newSchemaName);
 			if (dPump.getInfo()) {
 				System.out.println("This is dpump file");
 				return dPump;

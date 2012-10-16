@@ -5,8 +5,8 @@ import java.io.File;
 import com.hp.jmx.util.FileAccessor;
 
 public class DPump extends BaseDBDump implements DBDump {
-	public DPump(String dumpFile, String url, String oracleDataSpace,OracleDBAccessor dbAccessor) throws Exception  {
-		super(dumpFile, url, oracleDataSpace,dbAccessor);
+	public DPump(String dumpFile, String url, String oracleDataSpace,OracleDBAccessor dbAccessor, String newSchemaName) throws Exception  {
+		super(dumpFile, url, oracleDataSpace,dbAccessor,newSchemaName);
 		createOracleDir ();
 	}
 	

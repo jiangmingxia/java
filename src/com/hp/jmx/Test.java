@@ -29,6 +29,7 @@ public class Test {
 	private static final String ORACLE_JDBC_URL_KEY="oracle.jdbc.url";
 	private static final String DUMP_FILE="dumpFile";
 	private static final String ORACLE_DATA_SPACE="oracleDataSpace";
+	private static final String NEW_SCHEMA="newSchema";
 
 	private static Properties siteAdminProperties;
 	private static Configure configs;
@@ -236,12 +237,13 @@ public class Test {
 		String url = getConfigs().get(ORACLE_JDBC_URL_KEY);
 		String dumpFile = getConfigs().get(DUMP_FILE);	
 		String oracleSpace = getConfigs().get(ORACLE_DATA_SPACE);
+		String newSchemaName = getConfigs().get(NEW_SCHEMA);
 		DBAccessor dbAccessor = AccessorFactory.getDBAccessor(url, null,
 				true);	
 		if (dbAccessor==null) {
 			System.out.println("Fail to access: "+url);
 		}
-		DBDump dump = DBDumpFactory.getDBDump(dumpFile,url,oracleSpace,(OracleDBAccessor)dbAccessor);
+		DBDump dump = DBDumpFactory.getDBDump(dumpFile,url,oracleSpace,(OracleDBAccessor)dbAccessor,newSchemaName);
 		if (dump==null) {
 			return;
 		}
