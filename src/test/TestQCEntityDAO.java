@@ -1,5 +1,6 @@
 package test;
 
+import java.io.IOException;
 import java.text.DateFormat;
 
 import java.text.SimpleDateFormat;
@@ -10,6 +11,8 @@ import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
+import com.hp.jmx.qc.rest.QCRestClient;
+import com.hp.jmx.qc.rest.QCRestConfig;
 
 public class TestQCEntityDAO {
     
@@ -18,7 +21,7 @@ public class TestQCEntityDAO {
     
 	public static void main(String[] args) throws Exception {
     	//testQuery();
-    	//instanceQuery();
+    	instanceQuery();
     	//createQuery();
 		
 	    
@@ -52,6 +55,7 @@ public class TestQCEntityDAO {
             System.out.println("The queried test is : " + item);            
         }
         
+       
         return entity;
     }
     
@@ -66,7 +70,13 @@ public class TestQCEntityDAO {
         for (QCEntity item : entities) {        	
             System.out.println("The queried test is : " + item);            
         }
-        
+        try {
+        	System.out.println("begin log out");
+			QCRestClient.getInstance().logoutSession(QCRestConfig.getQCRestURL());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return entity;
     }
     

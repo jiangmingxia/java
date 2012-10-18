@@ -2,6 +2,7 @@ package com.hp.jmx.cmd;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -16,6 +17,7 @@ import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
 import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
+import com.hp.jmx.qc.rest.QCRestClient;
 import com.hp.jmx.qc.rest.QCRestConfig;
 import com.hp.jmx.qc.rest.entity.EntityFieldHelper;
 import com.hp.jmx.qc.util.FolderUtil;
@@ -163,6 +165,11 @@ public class LogCommand implements Command {
 		        }
 		    }		    
 		}
+		
+		//logout
+		 try {	        	
+			QCRestClient.getInstance().logoutSession(QCRestConfig.getQCRestURL());
+		} catch (IOException e) {}
 		return true;
 	}
 	

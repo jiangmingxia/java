@@ -24,6 +24,8 @@ public class QCRestClient {
 	
 	private String qcSessionCookieValue;
 	
+	
+	
 	private QCRestClient() {
 	    
 	}
@@ -39,12 +41,9 @@ public class QCRestClient {
             // (1) authenticate
             if (ssoCookieValue == null)
                 this.authenticate();
-            System.out.println("ssoCookieValue after authentication = "+ssoCookieValue);
 
             // (2) build the request
             conn = this.sendRequest(request);
-            
-            System.out.println ("QCSessionCookie after request = " + getCookieValue(conn, "QCSession"));
 
             final int responseCode = conn.getResponseCode();
             // give another try
@@ -55,7 +54,7 @@ public class QCRestClient {
             
             // (3) handle the response
             this.handleResponse(request, conn);
-            System.out.println ("QCSessionCookie after handleResponse = " + getCookieValue(conn, "QCSession"));
+            
         }  catch (final QCRestWSException e) {
             log.error("REST Web Service error(QCRestWSException):", e);
             throw e;
@@ -70,9 +69,11 @@ public class QCRestClient {
 
             // logout needs set the 2 cookies: LWSSO_COOKIE_KEY & QCSession
             // in the request.
-            if (ssoCookieValue != null) {
-                // logout
-                qcSessionCookieValue = this.getCookieValue(conn, "QCSession");
+            if (ssoCookieValue != null) {  
+            	String qcSessionCookieValue1 = this.getCookieValue(conn, "QCSession");
+            	if (qcSessionCookieValue1!=null && !qcSessionCookieValue1.isEmpty() && !qcSessionCookieValue1.equals(qcSessionCookieValue)) {
+            		qcSessionCookieValue= qcSessionCookieValue1;
+            	}                
                 // get return cookie
                 log.debug("Cookie for QCSession: " + qcSessionCookieValue);
             }
@@ -167,7 +168,12 @@ public class QCRestClient {
     }
     
     private void setCookie(HttpURLConnection conn) {
-        String cookieValue = "LWSSO_COOKIE_KEY=" + ssoCookieValue + "; " + "QCSession=" + qcSessionCookieValue;
+    	String cookieValue;
+    	if (qcSessionCookieValue==null) {
+    		cookieValue = "LWSSO_COOKIE_KEY=" + ssoCookieValue;
+    	} else {
+    		cookieValue = "LWSSO_COOKIE_KEY=" + ssoCookieValue + "; " + "QCSession=" + qcSessionCookieValue;
+    	}    	
         conn.setRequestProperty("Cookie", cookieValue);       
     }
     
@@ -220,20 +226,20 @@ public class QCRestClient {
      * Logout from the QC session.
      * @param QCServerURL
      */
-    protected void logoutSession(final String QCServerURL) throws IOException
+    public void logoutSession(String QCServerURL) throws IOException
     {
-        final URL url = new URL(QCServerURL + "authentication-point/logout");
+    	if (!QCServerURL.endsWith("/")) QCServerURL +="/"; 
+        final URL url = new URL(QCServerURL + "authentication-point/logout");        
         final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         // add the timeout to the connection and read
         this.setTimeout(conn);
         conn.setRequestMethod(QCRestRequest.GET_METHOD);
 
         // set cookie
-        setCookie(conn);
-
+        setCookie(conn);        
+        
         // do get
         conn.connect();
-        System.out.println("Logout return code is:" + conn.getResponseCode());
         
         log.debug("Logout return code is:" + conn.getResponseCode());
 
