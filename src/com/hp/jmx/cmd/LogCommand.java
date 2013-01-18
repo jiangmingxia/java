@@ -51,7 +51,7 @@ public class LogCommand implements Command {
         Map<String,String> runDetails = convertLabelToFieldName(EntityObject.RUN_TYPE,details);
         if (testSetDetails==null||runDetails==null) return false;
         
-		//get test run result information, save it to Map: testId->test name, run result, run date
+		//get test run result information, save it to Map: testId->test name, run result, run date, test set name
 		Map<String, TestInfo> testRuns = logUtil.getTestRunInfo(logFileName, logDate);
 		if (testRuns==null) return false;		
 		testRuns = covertTestNameToId(testRuns); //convert test name to test id in QC
@@ -61,6 +61,7 @@ public class LogCommand implements Command {
 		
 		//insert run result to QC
 		//1.select testset match details and max/min test run time
+		//0) testset has same name as defined in test info (optional, if no test set name defined skip this condition)
 		//1) foreach details either = value or empty
 		//2) testset start date earlier than max run date, end date either empty or later than min run date
 		//3) testset is not under source folder/subfolder

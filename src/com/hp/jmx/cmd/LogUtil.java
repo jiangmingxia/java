@@ -28,6 +28,7 @@ public class LogUtil {
 	public final static String TEST_NAME="test";
 	public final static String TEST_RUNTIME="run time";
 	public final static String TEST_RESULT="result";
+	public final static String TESTSET_NAME="test set";
 	
 	
 	private Pattern testResultPattern;
@@ -37,7 +38,7 @@ public class LogUtil {
 	public DateFormat QCDateFormat;
 	
 	//design:
-	//{"test":"xxxx","run time":"MM\dd\yyyy HH:mm:ss AM|PM|am|pm","result":"Passed|Failed|Blocked|...."}
+	//{"test set":"abc","test":"xxxx","run time":"MM\dd\yyyy HH:mm:ss AM|PM|am|pm","result":"Passed|Failed|Blocked|...."}
 	//{"field":"xxxx","value":"xxxx"}
 	//{"field":"xxxx","value":"xxxx"}
 	
@@ -45,6 +46,7 @@ public class LogUtil {
 	public class TestInfo {
 		private String name;
 		private String runResult;
+		private String testSetName;
 		private Date date;
 		
 		public void setName(String name){
@@ -56,6 +58,9 @@ public class LogUtil {
 		public void setDate(Date date){
 			this.date=date;
 		}
+		public void setTestSetName(String testSetName){
+			this.testSetName = testSetName;
+		}
 		
 		public String getName(){
 			return this.name;
@@ -65,6 +70,9 @@ public class LogUtil {
 		}
 		public Date getDate(){
 			return this.date;
+		}
+		public String getTestSetName(){
+			return this.testSetName;
 		}
 	}
 	
@@ -178,7 +186,7 @@ public class LogUtil {
         }        
 	}
 	
-	//{"test":"<test name>","run time":"<run time of this test>","result":"<run status>"}	
+	//{"test set":"<test set name>","test":"<test name>","run time":"<run time of this test>","result":"<run status>"}	
 	//{"field":"platform","value":"Linux"}
 	private Map<String,String> readJSON(String oneLine) {
 		Map<String,String> data = new HashMap<String,String>();		
@@ -234,11 +242,17 @@ public class LogUtil {
                 String testName = data.get(TEST_NAME);
                 String runResult = data.get(TEST_RESULT);
                 String runTime = data.get(TEST_RUNTIME);
+                String testSetName=data.get(TESTSET_NAME); 
                 if (testName==null || runResult == null) continue; //skip not line when no test name/result info
                 if (!matchResultPattern(runResult)) continue; //skip line when test run status is not consistent with ALM                              
                 TestInfo ti = new TestInfo();
                 ti.setName(testName);
-                ti.setRunResult(runResult); 
+                ti.setRunResult(runResult);                
+                if (testSetName==null) {//if test set name is not defined add empty string for test set
+                	ti.setTestSetName("");
+                } else {
+                	ti.setTestSetName(testSetName);
+                }
                 
                 Date testExecDate = defaultDate;
                 if (runTime!=null) {
