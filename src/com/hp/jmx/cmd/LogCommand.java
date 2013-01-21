@@ -60,8 +60,7 @@ public class LogCommand implements Command {
 		Date minDate=getMinRunDate(testRuns.values());
 		
 		//insert run result to QC
-		//1.select testset match details and max/min test run time
-		//0) testset has same name as defined in test info (optional, if no test set name defined skip this condition)
+		//1.select testset match details and max/min test run time		
 		//1) foreach details either = value or empty
 		//2) testset start date earlier than max run date, end date either empty or later than min run date
 		//3) testset is not under source folder/subfolder
@@ -97,9 +96,9 @@ public class LogCommand implements Command {
         Map<String,String> instanceTestSetMap=testSetsInfo.getInstanceTestSetMap(); //instanceId->testsetId
         Map<String,List<String>> testInstancesMap=testSetsInfo.getTestInstancesMap(); //testId->InstanceIds		
 		
-		//foreach test run: testname:status
+		//foreach test run: testname:status[:test set name]
 		//1) according to testname, find corresponding test entity, test instanceIds, testset Ids: List<String[3]>
-		//2) according to testset Id get test set entities, check if its close date, start date meet the test run date
+		//2) according to testset Id get test set entities, check if its close date, start date meet the test run date, CHECK if its name meets test set name in test run info
 		//3) if find one result: insert this run		
         boolean needToCheckDate=true;
         if (maxDateString.equals(minDateString)) needToCheckDate=false;
@@ -111,11 +110,16 @@ public class LogCommand implements Command {
 		    LogUtil.TestInfo testRunInfo = testRuns.get(testId);
 		    String runStatus=testRunInfo.getRunResult();
 		    Date runDate=testRunInfo.getDate();
+		    String testSetNameOfRun=testRunInfo.getTestSetName();
 		    boolean find = false;		    
 		    List<String> instances = testInstancesMap.get(testId);
 		    if (instances!=null) {
 		        for (String instanceId:instances) {
 		            String testSetId=instanceTestSetMap.get(instanceId);
+		            if (!testSetNameOfRun.isEmpty()) {
+		            	QCEntity testSet=testSetMap.get(testSetId);
+		            	testSet.
+		            }
 		            if(needToCheckDate){
 		                QCEntity testSet=testSetMap.get(testSetId);
 		                try {
@@ -127,7 +131,7 @@ public class LogCommand implements Command {
 	                            }
 	                        }	                        
 	                    } catch (ParseException e) {
-	                        CommandOutput.errorOutput("Error when parse date.");
+	                        CommandOutput.errorOutput("Error when parse data.");
 	                        e.printStackTrace();
 	                        return false;
 	                    }
