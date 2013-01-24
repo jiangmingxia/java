@@ -1,11 +1,9 @@
 package test;
 
 import java.io.IOException;
-import java.text.DateFormat;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+
 import com.hp.jmx.qc.dao.QCEntityDAO;
 import com.hp.jmx.qc.dao.impl.DAOFactory;
 import com.hp.jmx.qc.model.EntityObject;
@@ -13,6 +11,7 @@ import com.hp.jmx.qc.model.KeyType;
 import com.hp.jmx.qc.model.QCEntity;
 import com.hp.jmx.qc.rest.QCRestClient;
 import com.hp.jmx.qc.rest.QCRestConfig;
+import com.hp.jmx.util.*;
 
 public class TestQCEntityDAO {
     
@@ -20,14 +19,11 @@ public class TestQCEntityDAO {
     
     
 	public static void main(String[] args) throws Exception {
-    	//testQuery();
-    	instanceQuery();
-    	//createQuery();
-		
-	    
-	    
-        
+		String pwd = "dela";
+		MyEncode.encode(pwd);		
     }
+	
+	
 
     private static QCEntity testQuery() {
         QCEntity entity = new QCEntity(EntityObject.TEST_TYPE, KeyType.FIELD_NAME);
@@ -37,6 +33,21 @@ public class TestQCEntityDAO {
         
         for (QCEntity item : entities) {
         	
+            System.out.println("The queried test is : " + item);
+        }
+        
+        return entity;
+    }
+    
+    private static QCEntity testSetQuery() {
+        QCEntity entity = new QCEntity(EntityObject.TEST_SET_TYPE, KeyType.FIELD_NAME);
+        entity.put(QCEntity.ID_NAME, "2");       
+        
+        List<QCEntity> entities = entityDAO.query(entity,false);
+        
+        for (QCEntity item : entities) {
+        	System.out.println("The queried test set name is "+ item.getEntityName());
+        	System.out.println("The queried test set parent id is "+ item.getEntityParentId());
             System.out.println("The queried test is : " + item);
         }
         

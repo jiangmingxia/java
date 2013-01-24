@@ -9,6 +9,8 @@ public class QCEntity extends HashMap<String, String>{
     
     public static final String ID_NAME = "id";
     
+    public static final String NAME_NAME="name";
+    
     public static final String PARENTID_NAME="parent-id";
 
     private static final long serialVersionUID = 945435541967440914L;
@@ -65,6 +67,22 @@ public class QCEntity extends HashMap<String, String>{
                 key = parentIdField.getLabel();
             else if (this.getKeyType() == KeyType.FIELD_PHISICAL_NAME)
                 key = parentIdField.getPhysicalName();
+            return this.get(key);
+        }
+        return null;
+    }
+    
+    public String getEntityName() {
+        if (this.getKeyType() == KeyType.FIELD_NAME)
+            return this.get(QCEntity.NAME_NAME);
+        Map<String, Field> nameFieldMap = EntityFieldHelper.getNameFieldMap(this.getEntityType());
+        Field nameField = nameFieldMap.get(QCEntity.NAME_NAME);
+        if (nameField != null) {
+            String key = null;
+            if (this.getKeyType() == KeyType.FIELD_LABEL)
+                key = nameField.getLabel();
+            else if (this.getKeyType() == KeyType.FIELD_PHISICAL_NAME)
+                key = nameField.getPhysicalName();
             return this.get(key);
         }
         return null;

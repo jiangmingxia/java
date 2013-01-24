@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +45,11 @@ public class LogUtil {
 	
 	
 	public class TestInfo {
-		private String name;
+		private String name;		
 		private String runResult;
 		private String testSetName;
 		private Date date;
+		private String testId;
 		
 		public void setName(String name){
 			this.name = name;
@@ -60,6 +62,9 @@ public class LogUtil {
 		}
 		public void setTestSetName(String testSetName){
 			this.testSetName = testSetName;
+		}		
+		public void setTestId(String testId){
+			this.testId = testId;
 		}
 		
 		public String getName(){
@@ -73,6 +78,9 @@ public class LogUtil {
 		}
 		public String getTestSetName(){
 			return this.testSetName;
+		}		
+		public String getTestId(){
+			return this.testId;
 		}
 	}
 	
@@ -167,9 +175,10 @@ public class LogUtil {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String s = null;            
             while ((s = br.readLine()) != null) {
-                s=s.trim();    
+                s=s.trim();                
                 Map<String,String> data = readJSON(s);
-                if (data!=null && data.size()<1) continue;
+                if (data==null) continue;
+                if (data.size()<1) continue;
                 String key = data.get(FIELD_NAME);
                 String value = data.get(FIELD_VALUE);
                 if (key==null ||value == null) continue;
@@ -225,11 +234,11 @@ public class LogUtil {
 	 * retrieve test run result and run time info from given file
 	 * @param fileName
 	 * @param defaultDate : if run time info is not got use default date
-	 * @return test run result/info, test name as key
+	 * @return test run result/info
 	 * return null if any exception occurs
 	 */
-	public Map<String, TestInfo> getTestRunInfo(String fileName, Date defaultDate){
-	    Map<String, TestInfo> testRuns = new HashMap<String, TestInfo>(); 
+	public ArrayList<TestInfo> getTestRunInfo(String fileName, Date defaultDate){
+	    ArrayList<TestInfo> testRuns = new ArrayList<TestInfo>(); 
 	    try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String s = null;            
@@ -263,7 +272,7 @@ public class LogUtil {
                 	}
                 }
                 ti.setDate(testExecDate);               
-                testRuns.put(testName, ti);
+                testRuns.add(ti);
             }           
             br.close();
             return testRuns;

@@ -9,6 +9,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.jmx.util.MyEncode;
+
 public class QCRestConfig {
 
 	private static final Logger log = LoggerFactory.getLogger(QCRestConfig.class);
@@ -52,7 +54,7 @@ public class QCRestConfig {
 	}
 
 	public String getQCProperty(String key) {
-		return this.properties.getProperty(key);
+		return this.properties.getProperty(key).trim();
 	}
 	
 	public static QCRestConfig getInstance() {
@@ -68,7 +70,7 @@ public class QCRestConfig {
 	}
 	
 	public static String getQCRestPassword() {
-		return QCRestConfig.getInstance().getQCProperty(QC_REST_PASSWORD_KEY);
+		return MyEncode.decode(QCRestConfig.getInstance().getQCProperty(QC_REST_PASSWORD_KEY));
 	}
 	
     public static String getQCRestDomain() {

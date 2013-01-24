@@ -4,6 +4,7 @@ package com.hp.jmx.cmd;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +34,10 @@ public class LogCommand implements Command {
 	private static final String DetailsOption = "details";	
 	private static boolean SaveToSourceTestSetWhenNotFound = true; //can be changed later by command option
 	private static final QCEntityDAO entityDAO = DAOFactory.getQCEntityDAO();
+	
+	//since we may have several same name tests with different test set name
+	//use this to avoid query test id multiple times
+	private static final Map<String,String> TestNameIdMapCatch=new HashMap<String,String>() ;
 
 
 	@Override
@@ -48,16 +53,23 @@ public class LogCommand implements Command {
         Map<String,String> details = logUtil.getDetails(detailsFileName);
         if (details==null) return false;
         Map<String,String> testSetDetails = convertLabelToFieldName(EntityObject.TEST_SET_TYPE,details);
+        /***
+         * This is done for ALM Center: map description --> comment field for run entity
+         * need to remove it if not using center or there is other fields we can use for run details.
+         */
+        /////////////////////////BEGIN///////////////////////////////
+        map2CommentsFieldforCenter(details);
+        ///////////////////////// END ///////////////////////////////
         Map<String,String> runDetails = convertLabelToFieldName(EntityObject.RUN_TYPE,details);
         if (testSetDetails==null||runDetails==null) return false;
         
 		//get test run result information, save it to Map: testId->test name, run result, run date, test set name
-		Map<String, TestInfo> testRuns = logUtil.getTestRunInfo(logFileName, logDate);
+		ArrayList<TestInfo> testRuns = logUtil.getTestRunInfo(logFileName, logDate);
 		if (testRuns==null) return false;		
 		testRuns = covertTestNameToId(testRuns); //convert test name to test id in QC
 		if (testRuns==null) return false;		
-		Date maxDate=getMaxRunDate(testRuns.values());
-		Date minDate=getMinRunDate(testRuns.values());
+		Date maxDate=getMaxRunDate(testRuns);
+		Date minDate=getMinRunDate(testRuns);
 		
 		//insert run result to QC
 		//1.select testset match details and max/min test run time		
@@ -103,22 +115,28 @@ public class LogCommand implements Command {
         boolean needToCheckDate=true;
         if (maxDateString.equals(minDateString)) needToCheckDate=false;
         TestSetsInfo sourceTestSetsInfo=null;
+        Map<String,QCEntity> sourceTestSetMap=null;
         Map<String,String> sourceInstanceTestSetMap=null;
         Map<String,List<String>> sourceTestInstancesMap=null;
         
-		for (String testId:testRuns.keySet()) {
-		    LogUtil.TestInfo testRunInfo = testRuns.get(testId);
+		for (TestInfo testRunInfo: testRuns) {
+		    String testId = testRunInfo.getTestId();
 		    String runStatus=testRunInfo.getRunResult();
 		    Date runDate=testRunInfo.getDate();
-		    String testSetNameOfRun=testRunInfo.getTestSetName();
+		    String testSetNameOfRun=testRunInfo.getTestSetName();		    
 		    boolean find = false;		    
+		    
 		    List<String> instances = testInstancesMap.get(testId);
 		    if (instances!=null) {
 		        for (String instanceId:instances) {
 		            String testSetId=instanceTestSetMap.get(instanceId);
 		            if (!testSetNameOfRun.isEmpty()) {
 		            	QCEntity testSet=testSetMap.get(testSetId);
-		            	testSet.
+		            	//when test set name not match, skip this instance
+		            	if (!testSet.getEntityName().equals(testSetNameOfRun)){
+		            		continue;
+		            	}
+		            	//test set name matches-->go to next check
 		            }
 		            if(needToCheckDate){
 		                QCEntity testSet=testSetMap.get(testSetId);
@@ -153,6 +171,7 @@ public class LogCommand implements Command {
 		            //6.get all instances' test id: save to testId->InstanceIds
 		            if (sourceTestSetsInfo==null) {		                
 		                sourceTestSetsInfo = new TestSetsInfo(TestSetUtil.getAllSourceTestSets());
+		                sourceTestSetMap = sourceTestSetsInfo.getTestSetMap();//testsetId->test set entity
 		                sourceInstanceTestSetMap=sourceTestSetsInfo.getInstanceTestSetMap(); //instanceId->testsetId
 	                    sourceTestInstancesMap=sourceTestSetsInfo.getTestInstancesMap(); //instanceId->testId
 		            }
@@ -162,11 +181,20 @@ public class LogCommand implements Command {
 		                return false;
 		            }
 		            //just insert it into the first matched source instances
-		            String instanceId = sourceInstances.get(0);
-		            String testSetId=sourceInstanceTestSetMap.get(instanceId);
-                    if (RunUtil.createRun(testId, instanceId, testSetId, runStatus, runOwner, runDate,runDetails) == null) {
-                        return false;
-                    } 
+		            for (String instanceId: sourceInstances) {
+		            	String testSetId=sourceInstanceTestSetMap.get(instanceId);
+		            	if (!testSetNameOfRun.isEmpty()) {
+		            		QCEntity testSet=sourceTestSetMap.get(testSetId);
+		            		if (!testSet.getEntityName().equals(testSetNameOfRun)) {
+		            			continue;
+		            		}
+		            	}
+		            	if (RunUtil.createRun(testId, instanceId, testSetId, runStatus, runOwner, runDate,runDetails) == null) {
+	                        return false;
+	                    } else {
+	                    	break;
+	                    }		            	
+		            }		            
 		        }
 		    }		    
 		}
@@ -186,7 +214,7 @@ public class LogCommand implements Command {
                 CommandOutput.errorOutput("Cannot find field "+key+" for entity "+entityType);
                 return null;
             }            
-            fieldNameMap.put(fieldName, details.get(key));
+            fieldNameMap.put(fieldName, "\""+details.get(key)+"\"");
         }
         return fieldNameMap;
     }
@@ -196,18 +224,22 @@ public class LogCommand implements Command {
 	 * @param nameRunInfo
 	 * @return if test name not found in ALM, return null
 	 */
-	private Map<String, TestInfo> covertTestNameToId(Map<String, TestInfo> nameRunInfo) {
-	    Map<String, TestInfo> idRunInfo = new HashMap<String,TestInfo>();
-	    for (String testName:nameRunInfo.keySet()) {
-            TestInfo testInfo = nameRunInfo.get(testName);            
-            QCEntity test = TestUtil.getTestByName(testName);
-            if (test==null) {
-                CommandOutput.errorOutput("Test "+testName+" is not found in ALM. Please check.");
-                return null;
-            }
-            idRunInfo.put(test.getEntityId(), testInfo);
+	private ArrayList<TestInfo> covertTestNameToId(ArrayList<TestInfo> runInfo) {		
+	    for (TestInfo ti:runInfo) { 
+	    	String testName = ti.getName();
+	    	if (TestNameIdMapCatch.containsKey(testName)) {
+	    		ti.setTestId(TestNameIdMapCatch.get(testName));	    		
+	    	} else {
+	    		QCEntity test = TestUtil.getTestByName(testName);
+	            if (test==null) {
+	                CommandOutput.errorOutput("Test "+testName+" is not found in ALM. Please check.");
+	                return null;
+	            }
+	            ti.setTestId(test.getEntityId());
+	            TestNameIdMapCatch.put(testName, test.getEntityId());
+	    	}            
 	    }
-        return idRunInfo;
+        return runInfo;
     }
 	
     private boolean validateInput(Hashtable<String,String> options)	{
@@ -281,5 +313,20 @@ public class LogCommand implements Command {
             }
         }
         return minDate;        
+    }
+    
+    /***
+     * This is done for ALM Center: map Security Environment --> comment field for run entity
+     * need to remove it if not using center or there is other fields we can use for run details.
+     */
+    private Map<String,String> map2CommentsFieldforCenter(Map<String,String> details) {
+    	for (String key: details.keySet()) {
+    		if (key.equals("Security Environment")) {
+    			String value = details.get(key);
+    			details.remove(key);
+    			details.put("Comments",value);
+    		}
+    	}
+    	return details;
     }
 }

@@ -6,9 +6,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.hp.jmx.util.Base64;
+import com.hp.jmx.util.MyEncode;
 
 public class QCRestClient {
 
@@ -93,9 +95,11 @@ public class QCRestClient {
      */
     protected String authenticate() throws QCRestWSException, IOException {
         log.debug("Begin authenticate QC");
-        // encode the base64 codeing for username and password
-        final String userPassword = QCRestConfig.getQCRestUsername() + ":" + QCRestConfig.getQCRestPassword();
-        final String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+        // encode the base64 codeing for username and password        
+        final String userPassword = QCRestConfig.getQCRestUsername() + ":" + QCRestConfig.getQCRestPassword();   
+        //final String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+        final String encoding = new String(Base64.encodeToByte(userPassword.getBytes(), true));
+        
 
         String QCRestURL = QCRestConfig.getQCRestURL();
         if (!QCRestURL.endsWith("/")) QCRestURL = QCRestURL+"/";              
